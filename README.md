@@ -172,4 +172,4 @@ A: Gatebreaker integrates the **MITRE ATT&CK Framework** for threat detection ma
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///d:/PORTFOLIO/CHS/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
