@@ -1043,14 +1043,15 @@ async function main() {
   // Help command / fallback
   if (args.includes('--help') || args.includes('-h') || command === 'help') {
     console.log(`
-  ${pc.bold('Cybersec Career Coach CLI')}
+  ${pc.bold('Gatebreaker CLI')}
   
   ${pc.yellow('Usage:')}
-    npx cybersec-career-coach [command] [options]
+    npx gatebreaker [command] [options]
 
   ${pc.yellow('Commands:')}
     start / run                         - Start the interactive career intake and diagnostic (default)
     caveman                             - Start the interactive diagnostic in Caveman style
+    compare / simulate                  - Run side-by-side expert comparison simulator
     roadmap                             - Generate your interactive SVG/HTML career roadmap and lab checklist
     copy                                - Copy the full system prompt to your clipboard
     install                             - Install the modular skill folder to .skills/
@@ -1070,7 +1071,7 @@ async function main() {
     --zhipu                             - Force Zhipu GLM API provider (China)
     --qwen                              - Force Alibaba Qwen API provider (China)
     --ollama                            - Force Local Ollama provider (completely free/local)
-    -o, --output <filename>             - Direct report saving path (bypasses save prompt)
+    -o, --output <filename>             - Direct report/roadmap saving path (bypasses save prompt)
     -h, --help                          - Show this help message
     `);
     return;
@@ -1411,7 +1412,7 @@ ${profileText}
   }
 
   if (command === 'roadmap') {
-    const cachePath = path.join(os.homedir(), '.cybersec-career-coach-cache.json');
+    const cachePath = path.join(os.homedir(), '.gatebreaker-cache.json');
     let answers;
 
     try {
@@ -1426,7 +1427,7 @@ ${profileText}
       } catch (err) {}
     }
 
-    const reportPath = outputFile || path.join(process.cwd(), 'cybersec-career-coach-roadmap.html');
+    const reportPath = outputFile || path.join(process.cwd(), 'gatebreaker-roadmap.html');
     const targetReportPath = path.isAbsolute(reportPath) ? reportPath : path.resolve(process.cwd(), reportPath);
 
     try {
@@ -1444,7 +1445,7 @@ ${profileText}
   if (command === 'start' || command === 'run' || command === 'caveman') {
     printHeader();
 
-    const cachePath = path.join(os.homedir(), '.cybersec-career-coach-cache.json');
+    const cachePath = path.join(os.homedir(), '.gatebreaker-cache.json');
     let answers;
     let useCached = false;
 
@@ -1712,7 +1713,7 @@ ${diagnosticResponse}
         });
 
         if (saveChoice.value) {
-          targetReportPath = path.join(process.cwd(), 'cybersec-career-coach-report.md');
+          targetReportPath = path.join(process.cwd(), 'gatebreaker-report.md');
           await fs.writeFile(targetReportPath, reportContent, 'utf8');
           console.log(pc.green(`\n✓ Report saved successfully to:\n  ${targetReportPath}\n`));
         }
