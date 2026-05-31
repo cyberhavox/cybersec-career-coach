@@ -1,307 +1,1574 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gatebreaker | God-Tier Cybersecurity Career Diagnostics</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gatebreaker — A brutally honest, god-tier cybersecurity career diagnostic CLI. 8-dimension gap analysis, 40+ expert personas, visual roadmaps. Run npx gatebreaker.">
+  <meta name="theme-color" content="#030711">
+  <title>Gatebreaker | God-Tier Cybersecurity Career Diagnostics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* =============================
+       DESIGN TOKENS
+    ============================= */
+    :root {
+      --bg-base:    #030711;
+      --bg-surface: #0a0f1e;
+      --bg-card:    #0e1528;
+      --bg-glass:   rgba(10, 15, 30, 0.65);
+      --border:     rgba(255,255,255,0.07);
+      --border-glow: rgba(0,212,255,0.3);
+      --cyan:       #00d4ff;
+      --cyan-dim:   rgba(0,212,255,0.12);
+      --magenta:    #e040fb;
+      --magenta-dim:rgba(224,64,251,0.12);
+      --green:      #00e676;
+      --yellow:     #ffd740;
+      --text-hi:    #e8eaf0;
+      --text-mid:   #9ca3af;
+      --text-lo:    #4b5563;
+      --radius-sm:  8px;
+      --radius-md:  16px;
+      --radius-lg:  24px;
+      --radius-xl:  32px;
+      --z-nav: 50;
+      --z-toast: 60;
+      --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+      --transition-slow: 400ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* =============================
+       RESET & BASE
+    ============================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-hi);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    img, svg { display: block; }
+    button { font-family: inherit; cursor: pointer; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* =============================
+       BACKGROUND EFFECTS
+    ============================= */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-orb-1 {
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+      top: -200px; right: -100px;
+    }
+    .bg-orb-2 {
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(224,64,251,0.07) 0%, transparent 70%);
+      bottom: 10%; left: -100px;
+    }
+
+    /* =============================
+       LAYOUT
+    ============================= */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* =============================
+       NAVBAR — floating
+    ============================= */
+    .navbar {
+      position: fixed;
+      top: 1rem; left: 1rem; right: 1rem;
+      z-index: var(--z-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      background: rgba(10, 15, 30, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      transition: border-color var(--transition);
+    }
+    .navbar:hover { border-color: rgba(0,212,255,0.15); }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      color: var(--text-hi);
+    }
+    .logo svg { color: var(--cyan); flex-shrink: 0; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .nav-links a {
+      padding: 0.5rem 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      border-radius: var(--radius-sm);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: color var(--transition), background var(--transition);
+    }
+    .nav-links a:hover, .nav-links a:focus-visible {
+      color: var(--text-hi);
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-links a:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.1rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--cyan) !important;
+      min-height: 44px;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition) !important;
+    }
+    .nav-cta:hover { background: rgba(0,212,255,0.14) !important; border-color: var(--cyan) !important; transform: none !important; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-hi);
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition);
+    }
+    .hamburger:hover { background: rgba(255,255,255,0.05); }
+    .hamburger:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+    /* =============================
+       HERO
+    ============================= */
+    .hero {
+      min-height: 100vh;
+      padding: 10rem 0 6rem;
+      display: flex;
+      align-items: center;
+    }
+    .hero .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--cyan);
+      margin-bottom: 1.5rem;
+      animation: badge-pulse 2.5s ease-in-out infinite alternate;
+    }
+    @keyframes badge-pulse {
+      from { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+      to   { box-shadow: 0 0 18px 4px rgba(0,212,255,0.15); }
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: dot-blink 1.4s ease-in-out infinite;
+    }
+    @keyframes dot-blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+      max-width: 52ch;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Command Box */
+    .cmd-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem 0.75rem 1.25rem;
+      background: #020508;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      position: relative;
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    .cmd-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(224,64,251,0.04));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .cmd-box:hover { border-color: rgba(0,212,255,0.3); }
+    .cmd-box:hover::before { opacity: 1; }
+    .cmd-box code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+    }
+    .cmd-copy {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem;
+      background: none;
+      border: none;
+      color: var(--text-mid);
+      border-radius: 6px;
+      min-width: 32px;
+      min-height: 32px;
+      transition: color var(--transition), background var(--transition);
+    }
+    .cmd-copy:hover { color: var(--cyan); background: rgba(0,212,255,0.1); }
+    .cmd-copy:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.6rem;
+      background: linear-gradient(135deg, var(--cyan), #0099ff);
+      color: #030711;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      min-height: 44px;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,212,255,0.35); }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.4rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-hi);
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-radius: var(--radius-sm);
+      min-height: 44px;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+    /* Hero Terminal Visual */
+    .hero-visual { perspective: 1200px; }
+    .terminal-card {
+      background: #020408;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transform: rotateY(-10deg) rotateX(5deg);
+      box-shadow:
+        30px 30px 60px rgba(0,0,0,0.7),
+        0 0 60px rgba(0,212,255,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+    }
+    .terminal-card:hover {
+      transform: rotateY(-2deg) rotateX(2deg);
+      box-shadow: 15px 15px 40px rgba(0,0,0,0.5), 0 0 40px rgba(0,212,255,0.08);
+    }
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.2rem;
+      background: rgba(14,21,40,0.9);
+      border-bottom: 1px solid var(--border);
+    }
+    .tbar-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tbar-dot.red    { background: #ff5f57; }
+    .tbar-dot.yellow { background: #ffbd2e; }
+    .tbar-dot.green  { background: #28c840; }
+    .tbar-label {
+      margin-left: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-lo);
+    }
+    .terminal-body {
+      padding: 1.75rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+      line-height: 1.8;
+    }
+    .t-line { margin-bottom: 0.25rem; }
+    .t-prompt { color: var(--green); }
+    .t-cmd    { color: var(--text-hi); }
+    .t-cyan   { color: var(--cyan); }
+    .t-magenta{ color: var(--magenta); }
+    .t-yellow { color: var(--yellow); }
+    .t-muted  { color: var(--text-mid); }
+    .t-dim    { color: var(--text-lo); }
+    .cursor {
+      display: inline-block;
+      width: 8px; height: 1.1em;
+      background: var(--cyan);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: cursor-blink 1s step-end infinite;
+    }
+    @keyframes cursor-blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* =============================
+       STATS STRIP
+    ============================= */
+    .stats-strip {
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      font-weight: 500;
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    /* =============================
+       SECTION HEADER
+    ============================= */
+    .section-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding: 0.3rem 0.75rem;
+      background: var(--cyan-dim);
+      border-radius: 999px;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+      max-width: 58ch;
+    }
+    .section-header { margin-bottom: 4rem; }
+    .section-header.center { text-align: center; }
+    .section-header.center .section-subtitle { margin: 0 auto; }
+
+    /* =============================
+       FEATURES
+    ============================= */
+    .features { padding: 7rem 0; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      cursor: default;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .feature-card:hover {
+      border-color: rgba(0,212,255,0.25);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 24px rgba(0,212,255,0.05);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cyan-dim);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: var(--radius-sm);
+      color: var(--cyan);
+      margin-bottom: 1.5rem;
+    }
+    .feature-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+    }
+
+    /* =============================
+       FRAMEWORK — 8 Dimensions
+    ============================= */
+    .framework {
+      padding: 7rem 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .framework .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .framework-intro {
+      position: sticky;
+      top: 7rem;
+    }
+    .framework-intro .section-subtitle { margin-bottom: 2rem; }
+    .framework-intro .btn-primary { margin-top: 0.5rem; }
+
+    .dimensions-list { display: flex; flex-direction: column; gap: 1rem; }
+    .dimension-item {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: border-color var(--transition), transform var(--transition);
+      cursor: default;
+    }
+    .dimension-item:hover {
+      border-color: rgba(224,64,251,0.3);
+      transform: translateX(4px);
+    }
+    .dim-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--magenta);
+      background: var(--magenta-dim);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .dim-content h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .dim-content p {
+      font-size: 0.84rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
+    /* =============================
+       EXPERTS MARQUEE
+    ============================= */
+    .experts {
+      padding: 7rem 0;
+      overflow: hidden;
+    }
+    .experts .section-header { text-align: center; margin-bottom: 3.5rem; }
+    .marquee-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .marquee-track {
+      display: flex;
+      gap: 1rem;
+      width: max-content;
+      animation: marquee-left 30s linear infinite;
+    }
+    .marquee-track.reverse { animation: marquee-right 30s linear infinite; }
+    .marquee-wrapper:hover .marquee-track { animation-play-state: paused; }
+    @keyframes marquee-left {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes marquee-right {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+    .expert-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1.2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      white-space: nowrap;
+      cursor: default;
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+    }
+    .expert-chip svg { flex-shrink: 0; color: var(--magenta); }
+    .expert-chip:hover {
+      background: var(--magenta-dim);
+      border-color: rgba(224,64,251,0.3);
+      color: var(--text-hi);
+    }
+
+    /* =============================
+       HOW IT WORKS
+    ============================= */
+    .how-it-works {
+      padding: 7rem 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 2rem;
+      left: calc(33.33% + 1rem);
+      right: calc(33.33% + 1rem);
+      height: 1px;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta));
+      opacity: 0.3;
+    }
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      text-align: center;
+      transition: border-color var(--transition), transform var(--transition);
+      cursor: default;
+    }
+    .step-card:hover { border-color: rgba(0,212,255,0.2); transform: translateY(-6px); }
+    .step-num {
+      width: 52px; height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--cyan-dim), var(--magenta-dim));
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 50%;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+    .step-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .step-card p { font-size: 0.88rem; color: var(--text-mid); line-height: 1.7; }
+    .step-cmd {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.4rem 0.9rem;
+      background: #020508;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--cyan);
+    }
+
+    /* =============================
+       VERSION TABLE
+    ============================= */
+    .versions { padding: 7rem 0; }
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+    }
+    .version-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .version-table th, .version-table td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .version-table th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      background: rgba(10,15,30,0.6);
+    }
+    .version-table tr:last-child td { border-bottom: none; }
+    .version-table tbody tr { transition: background var(--transition); }
+    .version-table tbody tr:hover td { background: rgba(0,212,255,0.03); }
+    .v-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+    .v-badge.latest {
+      background: rgba(0,230,118,0.1);
+      border-color: rgba(0,230,118,0.25);
+      color: var(--green);
+    }
+    .v-date { color: var(--text-mid); font-size: 0.85rem; }
+
+    /* =============================
+       FAQ
+    ============================= */
+    .faq { padding: 7rem 0; background: var(--bg-surface); border-top: 1px solid var(--border); }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      transition: border-color var(--transition);
+      cursor: default;
+    }
+    .faq-item:hover { border-color: rgba(255,255,255,0.12); }
+    .faq-item h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      line-height: 1.45;
+    }
+    .faq-item h3 svg { flex-shrink: 0; color: var(--cyan); margin-top: 0.1em; }
+    .faq-item p { font-size: 0.88rem; color: var(--text-mid); line-height: 1.75; }
+
+    /* =============================
+       CTA BANNER
+    ============================= */
+    .cta {
+      padding: 8rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,212,255,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 50%, rgba(224,64,251,0.04) 0%, transparent 60%);
+    }
+    .cta .container { position: relative; z-index: 1; }
+    .cta h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+    .cta p {
+      font-size: 1.1rem;
+      color: var(--text-mid);
+      margin-bottom: 2.5rem;
+      max-width: 48ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* =============================
+       FOOTER
+    ============================= */
+    .footer {
+      padding: 3.5rem 0 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand .logo { margin-bottom: 0.85rem; }
+    .footer-brand p {
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+      max-width: 42ch;
+    }
+    .footer-links h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 1.25rem;
+    }
+    .footer-links ul { display: flex; flex-direction: column; gap: 0.75rem; }
+    .footer-links a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      min-height: 44px;
+      transition: color var(--transition);
+    }
+    .footer-links a:hover, .footer-links a:focus-visible { color: var(--cyan); }
+    .footer-links a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
+    .footer-links svg { flex-shrink: 0; }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--text-lo);
+      gap: 1rem;
+    }
+    .footer-bottom a { color: var(--text-mid); transition: color var(--transition); }
+    .footer-bottom a:hover { color: var(--cyan); }
+
+    /* =============================
+       TOAST
+    ============================= */
+    .toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      z-index: var(--z-toast);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.4rem;
+      background: rgba(0,230,118,0.12);
+      border: 1px solid rgba(0,230,118,0.35);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--green);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+    /* =============================
+       SCROLL REVEAL
+    ============================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* =============================
+       RESPONSIVE
+    ============================= */
+    @media (max-width: 1024px) {
+      .framework .container { grid-template-columns: 1fr; gap: 3rem; }
+      .framework-intro { position: static; }
+      .steps-grid::before { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 8rem 0 5rem; }
+      .hero .container { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { display: none; }
+      .stats-grid { gap: 2rem; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: calc(100% + 0.75rem);
+        left: 0; right: 0;
+        background: rgba(10,15,30,0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.75rem;
+        gap: 0.25rem;
+      }
+      .nav-links.open a { min-height: 48px; border-radius: var(--radius-sm); }
+      .hamburger { display: flex; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+      .navbar { position: relative; margin: 1rem; top: 0; left: 0; right: 0; }
+    }
+
+    @media (max-width: 480px) {
+      .section-title { font-size: 1.7rem; }
+      .hero-title { font-size: 2rem; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <span class="logo-icon">🔐</span>
-                <span class="logo-text">GATEBREAKER</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#framework">Framework</a></li>
-                <li><a href="#experts">Experts</a></li>
-                <li><a href="#version">Version</a></li>
-                <li><a href="#faq">FAQ</a></li>
-                <li><a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn btn-outline">GitHub</a></li>
-            </ul>
+
+  <!-- Background -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" aria-label="Main navigation">
+    <a href="#" class="logo" aria-label="Gatebreaker home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      GATEBREAKER
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#framework">Framework</a></li>
+      <li><a href="#experts">Experts</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li>
+        <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="nav-cta" aria-label="View on GitHub (opens in new tab)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          GitHub
+        </a>
+      </li>
+    </ul>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero" id="top">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge" role="status" aria-live="polite">
+          <span class="badge-dot" aria-hidden="true"></span>
+          v1.1.0 now live on npm
         </div>
-    </nav>
 
-    <header class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="badge">V1.1.0 IS LIVE</div>
-                <h1>The <span class="text-gradient">God-Tier</span> Cybersecurity Diagnostics & Simulator</h1>
-                <p class="hero-subtitle">Brutally honest, deeply analytical, and structured guidance for your cybersecurity journey. Stop collecting certs. Start building careers.</p>
-                <div class="hero-cta">
-                    <div class="terminal-command">
-                        <code>npx gatebreaker</code>
-                        <button class="copy-btn" onclick="copyCommand()">📋</button>
-                    </div>
-                    <a href="#features" class="btn btn-primary">Explore Features</a>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="card-preview">
-                    <div class="preview-header">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                    </div>
-                    <div class="preview-body">
-                        <p class="text-cyan">> initiate-diagnostic --target="SOC Analyst"</p>
-                        <p class="text-muted">Analyzing 8 dimensions of gaps...</p>
-                        <p class="text-magenta">📍 WHERE YOU ARE</p>
-                        <p>Cert Collector Archetype detected. 4 certs, 0 labs.</p>
-                        <p class="text-yellow">⚠️ HARD TRUTH</p>
-                        <p>No hiring manager cares about your 5th entry-level cert.</p>
-                    </div>
-                </div>
-            </div>
+        <h1 class="hero-title">
+          The <span class="text-gradient">God-Tier</span><br>
+          Cybersecurity<br>Career Diagnostic
+        </h1>
+
+        <p class="hero-subtitle">
+          Brutally honest gap analysis across 8 dimensions. Channel 40+ security legends. 
+          Generate visual roadmaps. Stop collecting certs — start breaking gates.
+        </p>
+
+        <div class="hero-actions">
+          <div class="cmd-box" role="group" aria-label="Run command">
+            <code>npx gatebreaker</code>
+            <button class="cmd-copy" onclick="copyCommand()" aria-label="Copy command to clipboard">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+          </div>
+
+          <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn-ghost" aria-label="View on GitHub (opens in new tab)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View on GitHub
+          </a>
         </div>
-    </header>
+      </div>
 
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Why Use Gatebreaker?</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Radical Honesty</h3>
-                    <p>No sugarcoating. We tell you exactly where you stand and what is actually holding you back.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Gap Analysis</h3>
-                    <p>Evaluates your profile across 8 core dimensions including Tool Gaps, Mindset Gaps, and Network Gaps.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🗺️</div>
-                    <h3>Visual Roadmaps</h3>
-                    <p>Generate interactive HTML roadmaps tailored to your specific career track (Offensive, Defensive, or GRC).</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧙</div>
-                    <h3>Expert Pantheon</h3>
-                    <p>Channel the philosophies of 40+ industry legends from Bruce Schneier to Kevin Mitnick.</p>
-                </div>
-            </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="terminal-card">
+          <div class="terminal-titlebar">
+            <span class="tbar-dot red"></span>
+            <span class="tbar-dot yellow"></span>
+            <span class="tbar-dot green"></span>
+            <span class="tbar-label">gatebreaker — diagnostic</span>
+          </div>
+          <div class="terminal-body">
+            <div class="t-line"><span class="t-prompt">❯ </span><span class="t-cmd">npx gatebreaker</span></div>
+            <div class="t-line t-dim">Initializing Gatebreaker v1.1.0...</div>
+            <div class="t-line">&nbsp;</div>
+            <div class="t-line"><span class="t-cyan">&#9608; GATEBREAKER — Career Diagnostic</span></div>
+            <div class="t-line t-dim">────────────────────────────────</div>
+            <div class="t-line">&nbsp;</div>
+            <div class="t-line"><span class="t-magenta">&#9657; Archetype Detected</span></div>
+            <div class="t-line">  Cert Collector · 5 certs, 0 labs</div>
+            <div class="t-line">&nbsp;</div>
+            <div class="t-line"><span class="t-yellow">&#9888; Gap Score: 7.2 / 10</span></div>
+            <div class="t-line t-muted">  Knowledge ████████░░ 78%</div>
+            <div class="t-line t-muted">  Portfolio  ███░░░░░░░ 28%</div>
+            <div class="t-line t-muted">  Network    ████░░░░░░ 35%</div>
+            <div class="t-line">&nbsp;</div>
+            <div class="t-line"><span class="t-cyan">&#9757; Expert Advice: Bruce Schneier</span></div>
+            <div class="t-line t-muted">  "Build process, not theater."</div>
+            <div class="t-line">&nbsp;</div>
+            <div class="t-line"><span class="t-prompt">❯ </span><span class="cursor"></span></div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </header>
 
-    <section id="framework" class="framework">
-        <div class="container">
-            <div class="framework-content">
-                <h2 class="section-title">The 8-Dimension Gap Framework</h2>
-                <p>Gatebreaker operates like a security incident investigation, analyzing your profile across these critical dimensions:</p>
-                <div class="gap-list">
-                    <div class="gap-item">
-                        <span class="gap-number">01</span>
-                        <div class="gap-text">
-                            <h4>Knowledge Gaps</h4>
-                            <p>Theoretical concepts required for the role.</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">02</span>
-                        <div class="gap-text">
-                            <h4>Skill Gaps</h4>
-                            <p>Practical tasks you can do independently.</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">03</span>
-                        <div class="gap-text">
-                            <h4>Tool Gaps</h4>
-                            <p>Hands-on experience with SIEMs, EDRs, etc.</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">04</span>
-                        <div class="gap-text">
-                            <h4>Certification Gaps</h4>
-                            <p>Aligning credentials with requirements.</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">05</span>
-                        <div class="gap-text">
-                            <h4>Portfolio Gaps</h4>
-                            <p>Verifiable proof (GitHub, labs, CTFs).</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">06</span>
-                        <div class="gap-text">
-                            <h4>Network Gaps</h4>
-                            <p>Professional community presence.</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">07</span>
-                        <div class="gap-text">
-                            <h4>Mindset Gaps</h4>
-                            <p>Thinking patterns (Defender vs. Adversary).</p>
-                        </div>
-                    </div>
-                    <div class="gap-item">
-                        <span class="gap-number">08</span>
-                        <div class="gap-text">
-                            <h4>Communication Gaps</h4>
-                            <p>Translating technical risk to business impact.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- ===== STATS STRIP ===== -->
+  <section class="stats-strip" aria-label="Key statistics">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal">
+          <div class="stat-value">40+</div>
+          <div class="stat-label">Expert Personas</div>
         </div>
-    </section>
-
-    <section id="experts" class="experts">
-        <div class="container">
-            <h2 class="section-title">Channel the Legends</h2>
-            <p class="section-subtitle">Our AI model channels the specific philosophies and strategies of industry experts.</p>
-            <div class="expert-marquee">
-                <div class="expert-tag">Sun Tzu</div>
-                <div class="expert-tag">Bruce Schneier</div>
-                <div class="expert-tag">Kevin Mitnick</div>
-                <div class="expert-tag">Dmitri Alperovitch</div>
-                <div class="expert-tag">Alan Turing</div>
-                <div class="expert-tag">Dr. Eric Cole</div>
-                <div class="expert-tag">Lenny Zeltser</div>
-                <div class="expert-tag">Katie Nickels</div>
-                <div class="expert-tag">Naomi Buckwalter</div>
-                <div class="expert-tag">Graham Cluley</div>
-            </div>
+        <div class="stat-item reveal reveal-delay-1">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Gap Dimensions</div>
         </div>
-    </section>
-
-    <section id="version" class="version-section">
-        <div class="container">
-            <h2 class="section-title">Version History</h2>
-            <p class="section-subtitle">Follow the progression and updates of the Gatebreaker framework.</p>
-            <div class="version-table-container">
-                <table class="version-table">
-                    <thead>
-                        <tr>
-                            <th>Version</th>
-                            <th>Release Date</th>
-                            <th>Key Upgrades</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>v1.1.0</strong></td>
-                            <td>May 31, 2026</td>
-                            <td>Overhauled the landing page design with a premium dark-ops theme, added colored status lights, version history timeline, FAQs, and a custom toast notification.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>v1.0.9</strong></td>
-                            <td>May 31, 2026</td>
-                            <td>Rebranded package and repo to Gatebreaker. Integrated local interactive career roadmaps with state preservation (localStorage), side-by-side Expert comparison, and optimized packaging setups.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>v1.0.8</strong></td>
-                            <td>May 2026</td>
-                            <td>Added OIDC Trusted Publishing and automated secure release workflows. Cleaned up dev dependencies.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>v1.0.7</strong></td>
-                            <td>May 2026</td>
-                            <td>Added native support for 12 global LLM API providers (Gemini, Claude, GPT, Groq, OpenRouter, DeepSeek, Mistral, Cohere, Krutrim, Sarvam, Zhipu, Qwen).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>v1.0.5</strong></td>
-                            <td>May 2026</td>
-                            <td>Launched interactive local visual career roadmap generation.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>v1.0.0</strong></td>
-                            <td>May 2026</td>
-                            <td>Initial public release of the 8-Dimension Intake system prompt and CLI tool.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="stat-item reveal reveal-delay-2">
+          <div class="stat-value">12</div>
+          <div class="stat-label">LLM Providers</div>
         </div>
-    </section>
-
-    <section id="faq" class="faq-section">
-        <div class="container">
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <p class="section-subtitle">Structured answers about the Gatebreaker methodology, frameworks, and architecture.</p>
-            <div class="faq-grid">
-                <div class="faq-item">
-                    <h3><span>💡</span> What is the core mission of Gatebreaker?</h3>
-                    <p>Gatebreaker was created to solve the "entry-level catch-22" in cybersecurity. It bypasses conventional generic advice by using an incident-investigation style gap analysis to build verifiable portfolios, focus on practical tooling, and help candidates stand out to technical managers.</p>
-                </div>
-                <div class="faq-item">
-                    <h3><span>📊</span> How does the 8-Dimension Gap Analysis work?</h3>
-                    <p>Instead of just checking your certifications, Gatebreaker analyzes your profile across Knowledge, Skills, Tools, Certifications, Portfolio, Network, Mindset, and Communication. It identifies exact blockers and maps out exactly what to learn and document.</p>
-                </div>
-                <div class="faq-item">
-                    <h3><span>🎓</span> What is the "Cert Collector" loop?</h3>
-                    <p>It is a common career trap where a professional continues to pass entry-level security certifications (like Security+, CySA+, CEH) hoping it will land them a job, while having zero practical labs or project proof. Gatebreaker forces you to halt exams and build documented labs instead.</p>
-                </div>
-                <div class="faq-item">
-                    <h3><span>🛠️</span> Which industry frameworks are integrated?</h3>
-                    <p>Gatebreaker integrates standard operational frameworks including the MITRE ATT&CK Framework for detection maps, OWASP Top 10 for software vulnerabilities, NIST SP 800-61 for incident handling, and the NICE Cybersecurity Workforce Framework for role mapping.</p>
-                </div>
-            </div>
+        <div class="stat-item reveal reveal-delay-3">
+          <div class="stat-value">MIT</div>
+          <div class="stat-label">Open Source</div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <section class="cta-banner">
-        <div class="container">
-            <h2>Ready for a <span class="text-magenta">Brutally Honest</span> Reality Check?</h2>
-            <p>Run the diagnostic tool now and see what you're truly missing.</p>
-            <div class="terminal-command">
-                <code>npx gatebreaker</code>
-                <button class="copy-btn" onclick="copyCommand()">📋</button>
-            </div>
+  <!-- ===== FEATURES ===== -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header center reveal">
+        <div class="section-tag">Why Gatebreaker</div>
+        <h2 class="section-title">Stop guessing. Start breaking gates.</h2>
+        <p class="section-subtitle">Every feature is engineered to give you an unfair advantage in a market full of gatekeeping.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3>Radical Honesty</h3>
+          <p>No motivational fluff. Gatebreaker tells you exactly where you stand, what's blocking you, and the specific actions that will change your trajectory.</p>
         </div>
-    </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon">🔐</span>
-                        <span class="logo-text">GATEBREAKER</span>
-                    </div>
-                    <p>Designed for the next generation of security professionals.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener">GitHub Repo</a></li>
-                        <li><a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener">NPM Package</a></li>
-                        <li><a href="https://linkedin.com/in/cyberhavox" target="_blank" rel="noopener">LinkedIn (@cyberhavox)</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Gatebreaker. MIT License.</p>
-                <p>Built by <a href="https://github.com/cyberhavox" target="_blank" rel="noopener">@cyberhavox</a> & <a href="https://github.com/cyberfascinate" target="_blank" rel="noopener">@cyberfascinate</a></p>
-            </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </div>
+          <h3>8-Dimension Gap Analysis</h3>
+          <p>Evaluates Knowledge, Skills, Tools, Certifications, Portfolio, Network, Mindset, and Communication gaps — scoring each against your target role's requirements.</p>
         </div>
-    </footer>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Command copied to clipboard!</div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+            </svg>
+          </div>
+          <h3>Visual Career Roadmaps</h3>
+          <p>Generates interactive HTML/SVG roadmaps with lab checklists for Offensive, Defensive, or GRC tracks. State saved in localStorage so you never lose progress.</p>
+        </div>
 
-    <script>
-        function copyCommand() {
-            navigator.clipboard.writeText('npx gatebreaker').then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        }
-    </script>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+            </svg>
+          </div>
+          <h3>Expert Pantheon</h3>
+          <p>Channel 40+ security legends — Sun Tzu, Bruce Schneier, Kevin Mitnick, and more — for perspective-specific career advice tuned to your exact situation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FRAMEWORK ===== -->
+  <section id="framework" class="framework">
+    <div class="container">
+      <div class="framework-intro reveal">
+        <div class="section-tag">The Framework</div>
+        <h2 class="section-title">8 Dimensions.<br>Zero Excuses.</h2>
+        <p class="section-subtitle">
+          Gatebreaker operates like a security incident investigation — gathering telemetry, 
+          forming hypotheses, and producing a ruthless gap report across every career dimension.
+        </p>
+        <a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener" class="btn-primary" style="margin-top:2rem; display:inline-flex;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Install via npm
+        </a>
+      </div>
+
+      <div class="dimensions-list">
+        <div class="dimension-item reveal">
+          <span class="dim-num">01</span>
+          <div class="dim-content">
+            <h4>Knowledge Gaps</h4>
+            <p>Theoretical concepts, protocols, and frameworks required to operate at your target role level.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-1">
+          <span class="dim-num">02</span>
+          <div class="dim-content">
+            <h4>Skill Gaps</h4>
+            <p>Practical tasks you can execute independently without guidance or documentation.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-1">
+          <span class="dim-num">03</span>
+          <div class="dim-content">
+            <h4>Tool Gaps</h4>
+            <p>Hands-on production experience with SIEMs, EDRs, vulnerability scanners, and debuggers.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-2">
+          <span class="dim-num">04</span>
+          <div class="dim-content">
+            <h4>Certification Gaps</h4>
+            <p>Aligning your credential stack with what your target roles actually require and respect.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-2">
+          <span class="dim-num">05</span>
+          <div class="dim-content">
+            <h4>Portfolio Gaps</h4>
+            <p>Verifiable proof — GitHub labs, CTF writeups, blog posts, and documented home labs.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-3">
+          <span class="dim-num">06</span>
+          <div class="dim-content">
+            <h4>Network Gaps</h4>
+            <p>Professional community presence, referral access, and industry signal visibility.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-3">
+          <span class="dim-num">07</span>
+          <div class="dim-content">
+            <h4>Mindset Gaps</h4>
+            <p>Thinking patterns — defender vs. adversary, reactive vs. proactive, consumer vs. builder.</p>
+          </div>
+        </div>
+        <div class="dimension-item reveal reveal-delay-4">
+          <span class="dim-num">08</span>
+          <div class="dim-content">
+            <h4>Communication Gaps</h4>
+            <p>The ability to translate technical risk into business impact language that executives understand.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EXPERTS MARQUEE ===== -->
+  <section id="experts" class="experts">
+    <div class="container">
+      <div class="section-header center reveal">
+        <div class="section-tag">Expert Pantheon</div>
+        <h2 class="section-title">Channel the Legends</h2>
+        <p class="section-subtitle">Gatebreaker invokes the specific philosophies of 40+ security icons to give you perspective-driven career guidance.</p>
+      </div>
+    </div>
+
+    <div class="marquee-wrapper" aria-label="Expert carousel" role="region">
+      <!-- Row 1 -->
+      <div class="marquee-track" aria-hidden="true">
+        <!-- doubles for seamless loop -->
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Sun Tzu</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Bruce Schneier</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Kevin Mitnick</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Dmitri Alperovitch</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Alan Turing</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Dr. Eric Cole</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Naomi Buckwalter</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Katie Nickels</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Lenny Zeltser</div>
+        <div class="expert-chip"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Graham Cluley</div>
+        <!-- Duplicate -->
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Sun Tzu</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Bruce Schneier</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Kevin Mitnick</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Dmitri Alperovitch</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Alan Turing</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Dr. Eric Cole</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Naomi Buckwalter</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Katie Nickels</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Lenny Zeltser</div>
+        <div class="expert-chip" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> Graham Cluley</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <div class="section-header center reveal">
+        <div class="section-tag">How It Works</div>
+        <h2 class="section-title">Three commands.<br>Total clarity.</h2>
+        <p class="section-subtitle">No complex setup. No API key required for demo mode. Run, diagnose, grow.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <div class="step-num" aria-hidden="true">01</div>
+          <h3>Run the Diagnostic</h3>
+          <p>Answer the intake questionnaire. Gatebreaker identifies your archetype, runs the 8-dimension gap scan, and delivers your career verdict.</p>
+          <span class="step-cmd">npx gatebreaker</span>
+        </div>
+
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-num" aria-hidden="true">02</div>
+          <h3>Compare the Experts</h3>
+          <p>See how Sun Tzu, Bruce Schneier, Kevin Mitnick, and Naomi Buckwalter each analyze your profile from their unique philosophy.</p>
+          <span class="step-cmd">npx gatebreaker compare</span>
+        </div>
+
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-num" aria-hidden="true">03</div>
+          <h3>Generate Your Roadmap</h3>
+          <p>Get an interactive HTML roadmap with a 90-day lab checklist tailored to your Offensive, Defensive, or GRC career track.</p>
+          <span class="step-cmd">npx gatebreaker roadmap</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VERSION HISTORY ===== -->
+  <section id="version" class="versions">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-tag">Changelog</div>
+        <h2 class="section-title">Version History</h2>
+        <p class="section-subtitle">Gatebreaker's journey from a system prompt to a full-featured diagnostic engine.</p>
+      </div>
+
+      <div class="table-wrap reveal">
+        <table class="version-table">
+          <thead>
+            <tr>
+              <th scope="col">Version</th>
+              <th scope="col">Released</th>
+              <th scope="col">Key Changes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="v-badge latest">v1.1.0 &#10003;</span></td>
+              <td class="v-date">May 31, 2026</td>
+              <td>Premium landing page redesign — SVG icons, floating navbar, scroll animations, semantic FAQ, version table, and glassmorphic toast.</td>
+            </tr>
+            <tr>
+              <td><span class="v-badge">v1.0.9</span></td>
+              <td class="v-date">May 31, 2026</td>
+              <td>Rebranded to Gatebreaker. Repo migrated to <code style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--cyan)">cyberhavox/gatebreaker</code>. Expert comparison dashboard, localStorage roadmaps.</td>
+            </tr>
+            <tr>
+              <td><span class="v-badge">v1.0.8</span></td>
+              <td class="v-date">May 2026</td>
+              <td>OIDC Trusted Publishing, automated CI/CD release workflow, dependency cleanup.</td>
+            </tr>
+            <tr>
+              <td><span class="v-badge">v1.0.7</span></td>
+              <td class="v-date">May 2026</td>
+              <td>Support for 12 global LLM API providers — Gemini, Claude, GPT-4, Groq, Mistral, Cohere, DeepSeek, Krutrim, Sarvam, Zhipu, Qwen, Ollama.</td>
+            </tr>
+            <tr>
+              <td><span class="v-badge">v1.0.5</span></td>
+              <td class="v-date">May 2026</td>
+              <td>Interactive SVG/HTML visual career roadmap generator with lab checklists.</td>
+            </tr>
+            <tr>
+              <td><span class="v-badge">v1.0.0</span></td>
+              <td class="v-date">May 2026</td>
+              <td>Initial public release — 8-Dimension intake system prompt and agentic skill.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq" class="faq">
+    <div class="container">
+      <div class="section-header center reveal">
+        <div class="section-tag">FAQ</div>
+        <h2 class="section-title">Common Questions</h2>
+        <p class="section-subtitle">Answers optimized for developers, AI agents, and answer engines.</p>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq-item reveal">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            What is the core mission of Gatebreaker?
+          </h3>
+          <p>Gatebreaker solves the "entry-level catch-22" in cybersecurity by using an incident-investigation style gap analysis instead of generic advice. It builds verifiable portfolios, identifies exact blockers, and helps candidates bypass automated HR filters by targeting technical hiring managers directly.</p>
+        </div>
+
+        <div class="faq-item reveal reveal-delay-1">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            How does the 8-Dimension Gap Analysis work?
+          </h3>
+          <p>Instead of just reviewing certifications, Gatebreaker evaluates your profile across Knowledge, Skills, Tools, Certifications, Portfolio, Network, Mindset, and Communication — each rated 0–5 against your target role's minimum entry requirements, generating a prioritized remediation plan.</p>
+        </div>
+
+        <div class="faq-item reveal reveal-delay-2">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            What is the "Cert Collector" archetype?
+          </h3>
+          <p>A career trap where professionals accumulate 4+ certifications (Security+, CEH, CySA+) while maintaining zero practical labs or public portfolio evidence. Gatebreaker prescribes stopping exam prep entirely and building documented home labs — Wazuh SIEM, Active Directory, CTF writeups — instead.</p>
+        </div>
+
+        <div class="faq-item reveal reveal-delay-3">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Which industry frameworks are integrated?
+          </h3>
+          <p>Gatebreaker integrates MITRE ATT&amp;CK for detection mapping, OWASP Top 10 for application security, NIST SP 800-61 for incident response, the FAIR framework for risk quantification, and NIST NICE (SP 800-181) for cybersecurity role taxonomy and skill mapping.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta" aria-labelledby="cta-heading">
+    <div class="container">
+      <h2 class="section-title reveal" id="cta-heading">
+        Ready for a <span class="text-gradient">Brutally Honest</span><br>Reality Check?
+      </h2>
+      <p class="reveal reveal-delay-1">Run the diagnostic. Find your gaps. Break the gates.</p>
+      <div class="cta-actions reveal reveal-delay-2">
+        <div class="cmd-box">
+          <code>npx gatebreaker</code>
+          <button class="cmd-copy" onclick="copyCommand()" aria-label="Copy command to clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn-ghost" aria-label="Star on GitHub (opens in new tab)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          Star on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan)" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            GATEBREAKER
+          </div>
+          <p>Designed for the next generation of security professionals. Built open-source under the MIT License.</p>
+        </div>
+
+        <nav class="footer-links" aria-label="Footer navigation">
+          <h4>Resources</h4>
+          <ul>
+            <li>
+              <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" aria-label="GitHub repository (opens in new tab)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub Repository
+              </a>
+            </li>
+            <li>
+              <a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener" aria-label="NPM package (opens in new tab)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 0v24h24V0zm19.2 19.2H4.8V4.8h14.4z"/></svg>
+                NPM Package
+              </a>
+            </li>
+            <li>
+              <a href="https://linkedin.com/in/cyberhavox" target="_blank" rel="noopener" aria-label="LinkedIn profile (opens in new tab)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                @cyberhavox
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Gatebreaker &mdash; MIT License</p>
+        <p>Built by <a href="https://github.com/cyberhavox" target="_blank" rel="noopener">@cyberhavox</a> &amp; <a href="https://github.com/cyberfascinate" target="_blank" rel="noopener">@cyberfascinate</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+    Copied to clipboard!
+  </div>
+
+  <script>
+    // Copy command
+    function copyCommand() {
+      navigator.clipboard.writeText('npx gatebreaker').then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2800);
+      }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = 'npx gatebreaker';
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      });
+    }
+
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+    // Close on link click (mobile)
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Scroll reveal — respects prefers-reduced-motion
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced) {
+      const revealEls = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      revealEls.forEach(el => observer.observe(el));
+    } else {
+      // Show all immediately if reduced motion
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    }
+  </script>
 </body>
 </html>
