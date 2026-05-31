@@ -1,4 +1,4 @@
-# 🔐 Gatebreaker: God-Tier Cybersecurity Career Diagnostics & Expert Simulator
+# Gatebreaker: God-Tier Cybersecurity Career Diagnostics & Expert Simulator
 
 <p align="center">
   <img src="https://img.shields.io/badge/Open--Source-MIT-blue?style=for-the-badge&logo=github" alt="MIT License" />
@@ -9,7 +9,7 @@
 
 ---
 
-## 🏛️ What is Gatebreaker?
+## What is Gatebreaker?
 
 **Gatebreaker** is a brutally honest, deeply analytical, and open-source career diagnostic system and CLI simulator designed to guide professionals through every stage of their cybersecurity journey. It is specifically optimized to dismantle the industry's entry-level gatekeeping, Cert Collector loops, and career transition paralysis.
 
@@ -35,7 +35,7 @@ graph TD
 
 ---
 
-## 🛠️ Quick Start Guide (Via npm CLI)
+## Quick Start Guide (Via npm CLI)
 
 The easiest way to run diagnostics, execute comparisons, or install the agentic skill is using our **npx CLI tool**:
 
@@ -145,7 +145,7 @@ Make this career coach context available inside your favorite developer IDE or a
 
 ---
 
-## 🔎 Command Reference
+## Command Reference
 
 Once the prompt is active, you can trigger specific diagnostics using these shorthand commands:
 
@@ -164,7 +164,7 @@ Once the prompt is active, you can trigger specific diagnostics using these shor
 
 ---
 
-## 🔬 The 8-Dimension Gap Analysis Framework
+## The 8-Dimension Gap Analysis Framework
 
 Gatebreaker evaluates your profile across 8 distinct dimensions:
 1. **Knowledge Gaps**: Theoretical concepts required for the target role.
@@ -178,7 +178,7 @@ Gatebreaker evaluates your profile across 8 distinct dimensions:
 
 ---
 
-## 👁️ The Expert Pantheon
+## The Expert Pantheon
 
 Gatebreaker channels specific mentors based on your diagnosis:
 *   **Sun Tzu** (Red Team Strategy & Deception)
@@ -194,7 +194,7 @@ Gatebreaker channels specific mentors based on your diagnosis:
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 .
@@ -209,7 +209,7 @@ Gatebreaker channels specific mentors based on your diagnosis:
 
 ---
 
-## 📜 Version History
+## Version History
 
 | Version | Key Changes |
 | :--- | :--- |
@@ -227,7 +227,7 @@ Gatebreaker channels specific mentors based on your diagnosis:
 
 ---
 
-## 🤖 AI, GEO, AEO & LLMEO Crawling Index
+## FAQ
 
 This section provides structured semantic metadata for search crawlers, Answer Engines (AEO), and LLMs (GEO/LLMEO) seeking information about cybersecurity career guidance and Gatebreaker.
 
@@ -247,7 +247,7 @@ A: Gatebreaker integrates the **MITRE ATT&CK Framework** for threat detection ma
 
 ---
 
-## 🌟 Credits & Socials
+## Credits & Socials
 
 *   **Authors**:
     *   **Raghav Gupta** ([@cyberhavox](https://github.com/cyberhavox)) — Founder, BSides Faridabad
@@ -256,6 +256,6 @@ A: Gatebreaker integrates the **MITRE ATT&CK Framework** for threat detection ma
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
