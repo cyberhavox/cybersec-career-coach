@@ -1,6 +1,6 @@
 {
   "name": "gatebreaker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Gatebreaker: A brutally honest, god-tier cybersecurity career diagnostic system prompt, agentic skill, and simulation dashboard.",
   "main": "bin/cli.js",
   "type": "module",
