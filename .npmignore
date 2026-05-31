@@ -8,4 +8,11 @@
 package-lock.json
 node_modules/
 *.zip
+*.tgz
 *.log
+
+# Generated reports & roadmaps
+cybersec-career-coach-roadmap.html
+cybersec-career-coach-report.md
+*-roadmap.html
+*-report.md
