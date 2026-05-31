@@ -1,0 +1,27 @@
+---
+Title: The Software Engineer Career Pivot
+Target Role: Application Security (AppSec) Engineer / DevSecOps
+---
+
+PROFILE SUMMARY:
+Senior Software Engineer with 5+ years of experience designing, building, and maintaining scalable web applications. Expert in JavaScript/TypeScript, Node.js, React, and AWS cloud infrastructure. Looking to pivot into Application Security (AppSec) / DevSecOps to leverage my deep software engineering background to help developers secure code pipelines.
+
+EXPERIENCE:
+- Senior Software Engineer at FinTech Solutions (2022 - Present)
+  - Designed microservices architecture handling 1M+ daily transactions.
+  - Led a team of 4 developers to rebuild payment gateway.
+- Full Stack Developer at WebTech Corp (2020 - 2022)
+  - Developed and maintained React frontends and Node.js backend.
+
+TECHNICAL SKILLS:
+- Languages: JavaScript, TypeScript, Python, SQL, HTML/CSS
+- Frameworks: React, Express, NestJS, Next.js
+- Cloud/DevOps: AWS (S3, EC2, Lambda), Docker, GitHub Actions, CI/CD
+
+SECURITY KNOWLEDGE & CERTIFICATIONS:
+- Read OWASP Top 10 documentation.
+- No formal security certifications.
+- No professional experience on a dedicated security team.
+
+OBSTACLE:
+Every AppSec role asks for "3+ years of security experience." I know how to write code, but recruiters seem to dismiss me because I do not have traditional security analyst experience, CISSP, or OSCP. How do I bridge this gap?

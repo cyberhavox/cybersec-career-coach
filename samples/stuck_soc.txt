@@ -1,0 +1,25 @@
+---
+Title: The Stuck SOC Tier 1 Analyst
+Target Role: Incident Responder / Threat Hunter (SOC Tier 2/3)
+---
+
+PROFILE SUMMARY:
+Dedicated SOC Analyst with 3 years of hands-on experience in a high-volume Security Operations Center. Monitored security alerts, triaged incidents, and escalated critical threats. Proficient in SIEM monitoring and basic log analysis. Looking to escape the burnout of Tier 1 alert fatigue and transition into a more analytical, deep-dive Incident Response or Threat Hunting role.
+
+EXPERIENCE:
+- Cybersecurity Analyst (SOC Tier 1) at Managed Security Provider (2023 - Present)
+  - Triaged 50+ alerts daily from Splunk SIEM.
+  - Performed initial phishing email investigation and endpoint quarantine.
+  - Followed pre-written playbooks to escalate incidents to Tier 2.
+
+TECHNICAL SKILLS & TOOLS:
+- SIEM: Splunk (Basic searching, dashboard usage)
+- EDR: CrowdStrike Falcon, Microsoft Defender for Endpoint
+- Firewalls & Traffic: Palo Alto Networks, Wireshark
+
+CERTIFICATIONS HELD:
+- CompTIA Security+ (2023)
+- Splunk Core Certified User (2024)
+
+OBSTACLE:
+I feel like a glorified ticket-dispatcher. Our SOC has strict playbooks; we are not allowed to do deep investigations or write custom detection rules (that's Tier 2/3). I am burning out on shift work and repetitive alerts, but I don't know how to prove I can handle Tier 2/3 engineering or investigation.

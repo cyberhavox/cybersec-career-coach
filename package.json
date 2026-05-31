@@ -1,11 +1,11 @@
 {
-  "name": "cybersec-career-coach",
+  "name": "gatebreaker",
   "version": "1.0.1",
-  "description": "Brutally honest, god-tier cybersecurity career advisor system prompt & agentic skill.",
+  "description": "Gatebreaker: A brutally honest, god-tier cybersecurity career diagnostic system prompt, agentic skill, and simulation dashboard.",
   "main": "bin/cli.js",
   "type": "module",
   "bin": {
-    "cybersec-career-coach": "bin/cli.js"
+    "gatebreaker": "bin/cli.js"
   },
   "repository": {
     "type": "git",
@@ -21,9 +21,18 @@
     "claude",
     "gpt"
   ],
-  "author": "Raghav Gupta (@cyberhavox)",
+  "author": "Raghav Gupta (@cyberhavox) & Kashish Kanojia (@cyberfascinate)",
+  "contributors": [
+    "Raghav Gupta (@cyberhavox)",
+    "Kashish Kanojia (@cyberfascinate)"
+  ],
+  "maintainers": [
+    "Raghav Gupta (@cyberhavox)",
+    "Kashish Kanojia (@cyberfascinate)"
+  ],
   "license": "MIT",
   "dependencies": {
+    "cybersec-career-coach": "^1.0.8",
     "picocolors": "^1.0.0",
     "prompts": "^2.4.2"
   },

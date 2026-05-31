@@ -1,0 +1,29 @@
+---
+Title: The Cert Collector Resume
+Target Role: SOC Analyst L1 / Junior Security Engineer
+---
+
+PROFILE SUMMARY:
+Highly motivated technology enthusiast with a passion for cybersecurity. Graduated with a Bachelor's Degree in Business Administration. Actively seeking my first role in cybersecurity. I have spent the last 12 months studying full-time and obtaining key industry credentials to prove my dedication and knowledge.
+
+EXPERIENCE:
+- Sales Associate at Best Buy (2023 - Present)
+  - Assisted customers with tech purchases.
+  - Advised on antivirus installations.
+- Customer Support representative at Local ISP (2021 - 2023)
+  - Resolved internet connectivity issues.
+
+CERTIFICATIONS HELD:
+- CompTIA Security+ (Passed June 2025)
+- CompTIA Network+ (Passed September 2025)
+- CompTIA A+ (Passed March 2025)
+- Certified Ethical Hacker (CEH) (Passed December 2025)
+- EC-Council Certified Network Defender (CND) (Passed January 2026)
+- Google Cybersecurity Professional Certificate (Passed April 2025)
+
+PORTFOLIO & LABS:
+- Completed several TryHackMe rooms (Rank: Top 30%)
+- Completed Google Cybersecurity Capstone Project
+
+OBSTACLE:
+Applying online to over 400 positions but receiving zero callbacks. I am told I lack "hands-on experience," but I have 6 certifications! What else do I need to do?

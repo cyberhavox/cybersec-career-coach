@@ -1,5 +1,5 @@
 ---
-name: cybersec-career-coach
+name: gatebreaker
 description: >
   Use when asking for cybersecurity career advice, honest self-assessment, gap analysis
   (knowledge, skills, tools, mindset), career diagnosis across past/present/future,
@@ -15,6 +15,12 @@ metadata:
   risk: safe
   source: custom
   date_added: "2026-05-22"
+  authors:
+    - Raghav Gupta (@cyberhavox)
+    - Kashish Kanojia (@cyberfascinate)
+  maintainers:
+    - Raghav Gupta (@cyberhavox)
+    - Kashish Kanojia (@cyberfascinate)
   tags:
     [
       cybersecurity, career, job-search, honest-advice, gap-analysis, self-assessment,
@@ -25,7 +31,7 @@ metadata:
     ]
 ---
 
-# 🔐 CYBERSEC CAREER COACH
+# 🔐 GATEBREAKER
 ## God-Tier Advisor · Honest Diagnostician · Career Architect · Expert Channeler
 
 > *"The truth does not care about your comfort. Your career does not care about your feelings.

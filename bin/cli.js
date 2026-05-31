@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import prompts from 'prompts';
 import pc from 'picocolors';
+import { mockResponses } from './mock_responses.js';
+import { generateComparisonHTML } from './html_generator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,7 +56,7 @@ function copyToClipboard(text) {
 // CLI Header
 function printHeader() {
   console.log(pc.cyan(`
-  🔐  ${pc.bold('CYBERSEC CAREER COACH')}
+  🔐  ${pc.bold('GATEBREAKER')}
   ${pc.dim('Brutally Honest Career Diagnostics & Actionable Roadmaps')}
   `));
 }
@@ -223,13 +225,13 @@ async function main() {
 
   if (command === 'copy') {
     try {
-      const promptPath = path.join(rootDir, 'cybersec-career-coach.md');
+      const promptPath = path.join(rootDir, 'gatebreaker.md');
       const text = await fs.readFile(promptPath, 'utf8');
       await copyToClipboard(text);
       console.log(pc.green('✓ System prompt copied to clipboard successfully!'));
     } catch (err) {
       console.log(pc.red('Error copying to clipboard: ' + err.message));
-      console.log(pc.yellow('Fallback: You can find the prompt file at:\n' + path.join(rootDir, 'cybersec-career-coach.md')));
+      console.log(pc.yellow('Fallback: You can find the prompt file at:\n' + path.join(rootDir, 'gatebreaker.md')));
     }
     return;
   }
@@ -241,19 +243,273 @@ async function main() {
     if (isGlobal) {
       // Install globally to standard config directory (e.g. ~/.gemini/config/skills)
       const home = process.env.HOME || process.env.USERPROFILE;
-      destDir = path.join(home, '.gemini', 'config', 'skills', 'cybersec-career-coach.skill');
+      destDir = path.join(home, '.gemini', 'config', 'skills', 'gatebreaker.skill');
     } else {
       // Local install in current project
-      destDir = path.join(process.cwd(), '.skills', 'cybersec-career-coach.skill');
+      destDir = path.join(process.cwd(), '.skills', 'gatebreaker.skill');
     }
 
     try {
-      const srcDir = path.join(rootDir, 'cybersec-career-coach.skill');
+      const srcDir = path.join(rootDir, 'gatebreaker.skill');
       await copyDir(srcDir, destDir);
       console.log(pc.green(`✓ Skill installed successfully at:\n  ${destDir}`));
     } catch (err) {
       console.log(pc.red('Error installing skill: ' + err.message));
     }
+    return;
+  }
+
+  if (command === 'compare' || command === 'simulate') {
+    printHeader();
+    console.log(pc.cyan('🔮 Welcome to the Expert Simulation Arena!'));
+    console.log(pc.dim('Compare how different security legends analyze your CV side-by-side.\n'));
+
+    // 1. Choose profile
+    const profileChoice = await prompts({
+      type: 'select',
+      name: 'value',
+      message: 'Select a profile to analyze:',
+      choices: [
+        { title: 'The Cert Collector (Sample Resume)', value: 'cert_collector' },
+        { title: 'The Software Engineer Career Pivot (Sample Resume)', value: 'career_pivot' },
+        { title: 'The Stuck SOC Analyst (Sample Resume)', value: 'stuck_soc' },
+        { title: 'Load custom profile (from text file)', value: 'file' },
+        { title: 'Paste custom profile / CV text directly', value: 'paste' }
+      ]
+    });
+
+    if (!profileChoice.value) {
+      console.log(pc.red('No profile selected. Exiting.'));
+      return;
+    }
+
+    let profileText = '';
+    let profileTitle = '';
+
+    if (profileChoice.value === 'file') {
+      const fileInput = await prompts({
+        type: 'text',
+        name: 'path',
+        message: 'Enter the absolute or relative path to the text file:'
+      });
+
+      if (!fileInput.path) {
+        console.log(pc.red('No file path provided. Exiting.'));
+        return;
+      }
+
+      try {
+        profileText = await fs.readFile(path.resolve(fileInput.path), 'utf8');
+        profileTitle = path.basename(fileInput.path);
+      } catch (err) {
+        console.log(pc.red(`Failed to read file: ${err.message}`));
+        return;
+      }
+    } else if (profileChoice.value === 'paste') {
+      const pasteInput = await prompts({
+        type: 'text',
+        name: 'content',
+        message: 'Paste your CV / profile text here:'
+      });
+
+      if (!pasteInput.content) {
+        console.log(pc.red('No content provided. Exiting.'));
+        return;
+      }
+
+      profileText = pasteInput.content;
+      profileTitle = 'Pasted Custom Profile';
+    } else {
+      // Load one of our samples
+      const samplePath = path.join(rootDir, 'samples', `${profileChoice.value}.txt`);
+      try {
+        profileText = await fs.readFile(samplePath, 'utf8');
+        if (profileChoice.value === 'cert_collector') profileTitle = 'The Cert Collector';
+        if (profileChoice.value === 'career_pivot') profileTitle = 'The Software Engineer Career Pivot';
+        if (profileChoice.value === 'stuck_soc') profileTitle = 'The Stuck SOC Analyst';
+      } catch (err) {
+        console.log(pc.red(`Failed to read sample profile: ${err.message}`));
+        return;
+      }
+    }
+
+    // 2. Ask for target role
+    let initialRole = 'SOC Analyst L1';
+    if (profileChoice.value === 'career_pivot') initialRole = 'AppSec Engineer';
+    if (profileChoice.value === 'stuck_soc') initialRole = 'Incident Responder';
+
+    const roleChoice = await prompts({
+      type: 'text',
+      name: 'role',
+      message: 'What target security role is this profile aiming for?',
+      initial: initialRole
+    });
+
+    if (!roleChoice.role) {
+      console.log(pc.red('No target role provided. Exiting.'));
+      return;
+    }
+
+    // 3. Choose experts
+    const expertChoice = await prompts({
+      type: 'multiselect',
+      name: 'experts',
+      message: 'Select experts to compare (Select 2 to 4 recommended):',
+      choices: [
+        { title: 'Sun Tzu (Offensive Strategy & Deception)', value: 'sun_tzu' },
+        { title: 'Bruce Schneier (Process & Policy Realism)', value: 'bruce_schneier' },
+        { title: 'Kevin Mitnick (Human Factors & Intrusion)', value: 'kevin_mitnick' },
+        { title: 'Naomi Buckwalter (Hiring Reform & AppSec)', value: 'naomi_buckwalter' },
+        { title: 'Dmitri Alperovitch (Threat Intelligence & Geopolitics)', value: 'dmitri_alperovitch' },
+        { title: 'Lenny Zeltser (Malware Analysis)', value: 'lenny_zeltser' },
+        { title: 'Dr. Eric Cole (C-Suite Risk Translation)', value: 'dr_eric_cole' },
+        { title: 'Marcus Aurelius (Stoic Composure & Crisis Management)', value: 'marcus_aurelius' }
+      ],
+      min: 1
+    });
+
+    if (!expertChoice.experts || expertChoice.experts.length === 0) {
+      console.log(pc.red('No experts selected. Exiting.'));
+      return;
+    }
+
+    const selectedExperts = expertChoice.experts;
+
+    // Define expert persona prompts
+    const expertInstructions = {
+      sun_tzu: "Adopt the exclusive persona of Sun Tzu (~500 BC), author of The Art of War. Focus on offensive/defensive strategy, deception, terrain, and adversary simulation. Provide brutally honest career advice in this specific style.",
+      bruce_schneier: "Adopt the exclusive persona of Bruce Schneier. Focus on security processes vs. products, security theater, policy realism, and systemic design. Provide brutally honest career advice in this specific style.",
+      kevin_mitnick: "Adopt the exclusive persona of Kevin Mitnick. Focus on human factors, social engineering, physical security bypasses, and practical intrusion methodologies. Provide brutally honest career advice in this specific style.",
+      naomi_buckwalter: "Adopt the exclusive persona of Naomi Buckwalter. Focus on AppSec, developer empathy, hiring reform, bypassing gatekeeping, and practical portfolio building. Provide brutally honest career advice in this specific style.",
+      dmitri_alperovitch: "Adopt the exclusive persona of Dmitri Alperovitch. Focus on cyber threat intelligence, geopolitics, nation-state actor attribution, and board-level risk. Provide brutally honest career advice in this specific style.",
+      lenny_zeltser: "Adopt the exclusive persona of Lenny Zeltser. Focus on malware analysis, reverse engineering toolkit design, threat triage, and educational path building. Provide brutally honest career advice in this specific style.",
+      dr_eric_cole: "Adopt the exclusive persona of Dr. Eric Cole. Focus on translating technical risk into business risk and dollars, executive metrics, C-suite communication, and pragmatism. Provide brutally honest career advice in this specific style.",
+      marcus_aurelius: "Adopt the exclusive persona of Marcus Aurelius. Focus on stoic composure, crisis management under uncertainty, rational response to breaches, and mental resilience. Provide brutally honest career advice in this specific style."
+    };
+
+    // 4. API keys check & run
+    let apiProvider = null;
+    let apiKey = process.env.GEMINI_API_KEY || process.env.ANTHROPIC_API_KEY;
+
+    if (process.env.GEMINI_API_KEY) {
+      apiProvider = 'gemini';
+    } else if (process.env.ANTHROPIC_API_KEY) {
+      apiProvider = 'anthropic';
+    }
+
+    const isPreloadedSample = ['cert_collector', 'career_pivot', 'stuck_soc'].includes(profileChoice.value);
+    const hasMockForSelectedExperts = selectedExperts.every(e => ['sun_tzu', 'bruce_schneier', 'kevin_mitnick', 'naomi_buckwalter'].includes(e));
+
+    const results = {};
+
+    if (!apiKey && isPreloadedSample && hasMockForSelectedExperts) {
+      console.log(pc.yellow('\nℹ No API keys found. Running in Mock Fallback Mode using pre-rendered expert reviews.'));
+      
+      // Load mock responses
+      for (const expertKey of selectedExperts) {
+        results[expertKey] = mockResponses[profileChoice.value][expertKey];
+      }
+    } else {
+      // Require API key
+      if (!apiKey) {
+        const apiChoice = await prompts({
+          type: 'select',
+          name: 'choice',
+          message: 'No API keys found in environment. How would you like to proceed?',
+          choices: [
+            { title: 'Enter a Google Gemini API Key', value: 'gemini' },
+            { title: 'Enter an Anthropic Claude API Key', value: 'anthropic' },
+            { title: 'Cancel simulation', value: 'cancel' }
+          ]
+        });
+
+        if (apiChoice.choice === 'cancel' || !apiChoice.choice) {
+          console.log(pc.red('Simulation cancelled.'));
+          return;
+        }
+
+        const keyInput = await prompts({
+          type: 'password',
+          name: 'key',
+          message: `Please paste your ${apiChoice.choice === 'gemini' ? 'Gemini' : 'Anthropic'} API Key:`
+        });
+        apiKey = keyInput.key;
+        apiProvider = apiChoice.choice;
+      }
+
+      if (!apiKey || !apiProvider) {
+        console.log(pc.red('Missing API provider or API key. Exiting.'));
+        return;
+      }
+
+      console.log(pc.yellow(`\nGenerating comparative analysis via ${apiProvider === 'gemini' ? 'Gemini' : 'Anthropic'} for ${selectedExperts.length} experts...`));
+
+      try {
+        const systemPromptPath = path.join(rootDir, 'gatebreaker.md');
+        const systemPrompt = await fs.readFile(systemPromptPath, 'utf8');
+
+        // Loading indicator
+        let dots = 0;
+        const interval = setInterval(() => {
+          process.stdout.write(`\r${pc.cyan('Simulating experts' + '.'.repeat(dots % 4) + ' '.repeat(3 - (dots % 4)))}`);
+          dots++;
+        }, 300);
+
+        const promises = selectedExperts.map(async (expertKey) => {
+          const expertInstruction = expertInstructions[expertKey];
+          const expertSystemPrompt = systemPrompt + "\n\nCRITICAL INSTRUCTION: " + expertInstruction;
+          
+          const userMsg = `
+Analyze the following profile for the target role: "${roleChoice.role}".
+Adopting the exclusive persona and philosophy of your character, deliver a brutally honest diagnostic review.
+
+PROFILE / CV:
+${profileText}
+          `.trim();
+
+          const response = await callLLM(expertSystemPrompt, userMsg, apiProvider, apiKey);
+          return { expertKey, response };
+        });
+
+        const outputs = await Promise.all(promises);
+        clearInterval(interval);
+        process.stdout.write('\r' + ' '.repeat(40) + '\r'); // Clear loading line
+
+        for (const out of outputs) {
+          results[out.expertKey] = out.response;
+        }
+      } catch (err) {
+        console.log(pc.red('\nFailed to generate comparative analysis: ' + err.message));
+        return;
+      }
+    }
+
+    // 5. Generate HTML and open in browser
+    const outputPath = path.join(process.cwd(), 'expert-comparison.html');
+    console.log(pc.yellow('Generating visualization dashboard...'));
+
+    const profileData = {
+      title: profileTitle,
+      content: profileText
+    };
+
+    try {
+      await generateComparisonHTML(profileData, roleChoice.role, results, outputPath);
+      console.log(pc.green(`\n✓ Comparison dashboard generated successfully!`));
+      console.log(pc.cyan(`  File Location: file:///${outputPath.replace(/\\/g, '/')}`));
+
+      console.log(pc.yellow('\nLaunching dashboard in your browser...'));
+      if (process.platform === 'win32') {
+        spawn('cmd', ['/c', `start "" "${outputPath}"`]);
+      } else if (process.platform === 'darwin') {
+        spawn('open', [outputPath]);
+      } else {
+        spawn('xdg-open', [outputPath]);
+      }
+    } catch (err) {
+      console.log(pc.red(`Failed to generate HTML report: ${err.message}`));
+    }
+
     return;
   }
 
@@ -341,7 +597,7 @@ Q5 — Biggest Obstacle:
     console.log(pc.yellow(`\nChannelling the Coach via ${apiProvider === 'gemini' ? 'Gemini' : 'Anthropic'}...`));
 
     try {
-      const systemPromptPath = path.join(rootDir, 'cybersec-career-coach.md');
+      const systemPromptPath = path.join(rootDir, 'gatebreaker.md');
       const systemPrompt = await fs.readFile(systemPromptPath, 'utf8');
 
       // Loading indicator
@@ -367,14 +623,15 @@ Q5 — Biggest Obstacle:
 
   // Help command / fallback
   console.log(`
-  ${pc.bold('Cybersec Career Coach CLI')}
+  ${pc.bold('Gatebreaker CLI')}
   
   ${pc.yellow('Usage:')}
-    npx cybersec-career-coach           ${pc.dim('- Start the interactive career intake and diagnostic')}
-    npx cybersec-career-coach caveman   ${pc.dim('- Start the interactive diagnostic in Caveman style')}
-    npx cybersec-career-coach copy      ${pc.dim('- Copy the full system prompt to your clipboard')}
-    npx cybersec-career-coach install   ${pc.dim('- Install the modular skill folder to .skills/')}
-    npx cybersec-career-coach install --global  ${pc.dim('- Install the skill globally in ~/.gemini/config/skills')}
+    npx gatebreaker           ${pc.dim('- Start the interactive career intake and diagnostic')}
+    npx gatebreaker caveman   ${pc.dim('- Start the interactive diagnostic in Caveman style')}
+    npx gatebreaker compare   ${pc.dim('- Run side-by-side expert comparison simulator')}
+    npx gatebreaker copy      ${pc.dim('- Copy the full system prompt to your clipboard')}
+    npx gatebreaker install   ${pc.dim('- Install the modular skill folder to .skills/')}
+    npx gatebreaker install --global  ${pc.dim('- Install the skill globally in ~/.gemini/config/skills')}
   `);
 }
 
