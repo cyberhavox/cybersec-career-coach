@@ -40,10 +40,57 @@ graph TD
 The easiest way to run diagnostics, execute comparisons, or install the agentic skill is using our **npx CLI tool**:
 
 ### 1. Run the Interactive Intake & Diagnostic
-Start an interactive terminal session that guides you through the Intake Questionnaire and generates a career diagnostic report utilizing LLMs (Gemini or Claude):
+Start an interactive terminal session that guides you through the Intake Questionnaire and generates a career diagnostic report:
 ```bash
 npx gatebreaker
 ```
+
+#### CLI Options:
+*   **Select LLM Provider**: Override auto-detection and specify which AI provider/model to run the diagnostic on:
+    ```bash
+    # Force Google Gemini API (Free tier available)
+    npx gatebreaker --gemini
+    
+    # Force Anthropic Claude API
+    npx gatebreaker --anthropic
+    
+    # Force OpenAI GPT API
+    npx gatebreaker --openai
+
+    # Force Groq API (High-speed free developer tier)
+    npx gatebreaker --groq
+
+    # Force OpenRouter API (Supports free LLM models)
+    npx gatebreaker --openrouter
+
+    # Force DeepSeek API (China / High-efficiency)
+    npx gatebreaker --deepseek
+
+    # Force Mistral AI API (Europe)
+    npx gatebreaker --mistral
+
+    # Force Cohere API (Europe)
+    npx gatebreaker --cohere
+
+    # Force Krutrim AI API (India)
+    npx gatebreaker --krutrim
+
+    # Force Sarvam AI API (India)
+    npx gatebreaker --sarvam
+
+    # Force Zhipu GLM API (China)
+    npx gatebreaker --zhipu
+
+    # Force Alibaba Qwen API (China)
+    npx gatebreaker --qwen
+
+    # Force Local Ollama endpoint (100% local and free)
+    npx gatebreaker --ollama
+    ```
+*   **Direct File Output**: Directly write the generated report to a Markdown file without interactive confirmation prompts:
+    ```bash
+    npx gatebreaker --output=my-diagnostics.md
+    ```
 
 ### 2. Compare Security Legends Side-by-Side (Simulator)
 Run the expert comparison simulator to see how different security personalities (e.g. Sun Tzu, Bruce Schneier, Kevin Mitnick, Naomi Buckwalter) analyze a CV/profile side-by-side. It generates a futuristic dark-mode HTML comparison dashboard and opens it in your default browser:
@@ -52,28 +99,49 @@ npx gatebreaker compare
 ```
 *Note: If no API keys are found in your environment, it runs in **Mock Fallback Mode** using pre-rendered expert responses for pre-loaded sample profiles, allowing you to demo the dashboard instantly.*
 
-### 3. Run the Diagnostic in Caveman Mode
+### 3. Generate an Interactive Visual Roadmap & Lab Checklist
+Generate a highly polished, interactive local HTML/SVG roadmap and hands-on lab checklist based on your career profile:
+```bash
+npx gatebreaker roadmap
+```
+*   Determines your security track (**Offensive**, **Defensive**, or **GRC**) based on your target role.
+*   Outputs a beautiful, customized `gatebreaker-roadmap.html` file.
+*   Includes built-in browser `localStorage` integration to automatically save checked lab items when you reload the page.
+*   Specify a custom output path using the `--output` or `-o` flag:
+    ```bash
+    npx gatebreaker roadmap --output=my-visual-roadmap.html
+    ```
+
+### 4. Run the Diagnostic in Caveman Mode
 Run the diagnostic questionnaire, but prompt the Coach to answer in a brutally honest, primitive "caveman" style (third-person, raw, and blunt words):
 ```bash
 npx gatebreaker caveman
 ```
 
-### 4. Copy the Consolidated System Prompt to Clipboard
+### 5. Copy the Consolidated System Prompt to Clipboard
 Copy the complete, ready-to-paste system prompt (~14,000 tokens) directly to your clipboard to use in Claude Projects, ChatGPT Custom GPTs, or Google AI Studio:
 ```bash
 npx gatebreaker copy
 ```
 
-### 5. Install the Modular Agentic Skill
-If you use developer agents (like Claude Code or Google Antigravity), you can install the custom skill:
-*   **Local installation** (in your current project):
-    ```bash
-    npx gatebreaker install
-    ```
-*   **Global installation** (in your user config directory):
-    ```bash
-    npx gatebreaker install --global
-    ```
+### 6. Integrate as a Universal AI Skill
+Make this career coach context available inside your favorite developer IDE or agentic environment:
+
+*   **Cursor IDE**: Copy `.cursorrules` to the root of your workspace.
+*   **Windsurf IDE**: Copy `.windsurfrules` to the root of your workspace.
+*   **Roo Code / Cline**: Copy `.clinerules` to the root of your workspace.
+*   **VS Code GitHub Copilot**: Copy `.github/copilot-instructions.md` to your workspace.
+*   **Sourcegraph Cody**: Copy `.codyrules` to the root of your workspace.
+*   **PearAI**: Copy `.pearai-rules` to the root of your workspace.
+*   **Claude Code & Google Antigravity**:
+    *   Local workspace installation:
+        ```bash
+        npx gatebreaker install
+        ```
+    *   Global user installation:
+        ```bash
+        npx gatebreaker install --global
+        ```
 
 ---
 
@@ -138,6 +206,23 @@ Gatebreaker channels specific mentors based on your diagnosis:
     ├── SKILL.md                    # Core skill configuration
     └── references/                 # 19 specialized markdown reference sheets
 ```
+
+---
+
+## 📜 Version History
+
+| Version | Key Changes |
+| :--- | :--- |
+| **1.0.9** | Rebranded repository to **Gatebreaker** and added side-by-side **Expert Simulator & Comparison Dashboard**. |
+| **1.0.8** | Added OIDC Trusted Publishing and modernized CI/CD workflow. Cleaned up redundant dependencies. |
+| **1.0.7** | Added support for 12 global LLM API providers (Gemini, Anthropic, OpenAI, Groq, OpenRouter, DeepSeek, Mistral, Cohere, Krutrim, Sarvam, Zhipu, Qwen). |
+| **1.0.6** | Optimized package size via `.npmignore` and added automated CI/CD publish workflows. |
+| **1.0.5** | Launched interactive Visual HTML/SVG Career Roadmap & Lab Checklist generator. |
+| **1.0.4** | Added support for local caching and automatic report saving (`.md` output). |
+| **1.0.3** | Integrated Universal AI rules for IDEs (`.cursorrules`, `.windsurfrules`, `.clinerules`, etc.). |
+| **1.0.2** | Implemented **Caveman Mode** for brutally honest, primitive diagnostics. |
+| **1.0.1** | Rebranded from "Oracle" to **Coach** and renamed package to `cybersec-career-coach`. |
+| **1.0.0** | Initial public release of the System Prompt and Agentic Skill. |
 
 ---
 

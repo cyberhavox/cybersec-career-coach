@@ -1,17 +1,33 @@
-# Version control
+# Version control & repository configs
 .git/
 .github/
 .gitignore
+.npmignore
+.cursorrules
+.windsurfrules
+.clinerules
+.codyrules
+.pearai-rules
 
-# Generated simulation files
-expert-comparison.html
-
-# Package lock
+# Node modules & packaging
+node_modules/
 package-lock.json
+*.zip
+*.tgz
+*.log
+npm-debug.log*
+
+# Generated dashboards, reports & roadmaps
+expert-comparison.html
+cybersec-career-coach-roadmap.html
+cybersec-career-coach-report.md
+*-roadmap.html
+*-report.md
 
 # Local configurations / IDEs
 .idea/
 .vscode/
 .gemini/
-*.log
-npm-debug.log*
+
+# Agentic Skills Local Installation Directory
+.skills/

@@ -1,8 +1,9 @@
 # Exclude temporary extracted directories
 skill-extracted/
 
-# Exclude zip archives
+# Exclude zip and tarball archives
 *.zip
+*.tgz
 
 # OS temporary files
 .DS_Store
@@ -11,5 +12,12 @@ Thumbs.db
 # Node dependencies
 node_modules/
 
-# Generated HTML comparisons
+# Generated HTML comparisons, reports & roadmaps
 expert-comparison.html
+cybersec-career-coach-roadmap.html
+cybersec-career-coach-report.md
+*-roadmap.html
+*-report.md
+
+# Agentic Skills Local Installation Directory
+.skills/
