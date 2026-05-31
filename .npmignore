@@ -17,17 +17,31 @@ package-lock.json
 *.log
 npm-debug.log*
 
+# Environment variables
+.env
+.env.*
+
+# Local configurations / IDEs
+.idea/
+.vscode/
+.gemini/
+
+# GitHub / Repository documentation (not needed in published package)
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+samples/
+
+# Landing page & UI static files (not needed for CLI execution)
+index.html
+styles.css
+
 # Generated dashboards, reports & roadmaps
 expert-comparison.html
 gatebreaker-roadmap.html
 gatebreaker-report.md
 *-roadmap.html
 *-report.md
-
-# Local configurations / IDEs
-.idea/
-.vscode/
-.gemini/
 
 # Agentic Skills Local Installation Directory
 .skills/

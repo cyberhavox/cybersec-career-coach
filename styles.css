@@ -64,6 +64,7 @@ h1, h2, h3, h4 {
 .text-gradient {
     background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.2));
 }
@@ -164,6 +165,7 @@ h1, h2, h3, h4 {
 .logo-text {
     background: linear-gradient(90deg, #fff, #8b949e);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

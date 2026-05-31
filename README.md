@@ -147,13 +147,29 @@ Make this career coach context available inside your favorite developer IDE or a
 
 ## Command Reference
 
-Once the prompt is active, you can trigger specific diagnostics using these shorthand commands:
+Gatebreaker operates in two distinct modes: **Local CLI mode** (commands run in your local system terminal) and **AI Chat mode** (conversational shorthand commands typed inside Claude, ChatGPT, or Gemini after pasting the prompt).
 
-| Command | Output |
+### 💻 1. Local CLI Commands
+Run these commands directly in your terminal:
+
+| Terminal Command | Action / Output |
+| :--- | :--- |
+| `gatebreaker` / `gatebreaker start` | Starts the interactive career intake questionnaire and generates a career diagnostic report. |
+| `gatebreaker caveman` | Runs the intake diagnostic but instructs the Coach to answer in a raw, primitive "caveman" voice. |
+| `gatebreaker compare` | Runs the side-by-side expert comparison simulator, generating a dark-mode HTML comparison dashboard. |
+| `gatebreaker roadmap` | Generates a highly polished visual SVG/HTML roadmap and interactive hands-on lab checklist. |
+| `gatebreaker copy` | Copies the full 14,000-token system prompt directly to your clipboard for pasting into external LLMs. |
+| `gatebreaker install` | Installs Gatebreaker as a modular, local agentic skill folder in `.skills/`. |
+| `gatebreaker install --global` | Installs the skill globally in `~/.gemini/config/skills`. |
+
+### 💬 2. AI Chat Commands (Shorthand)
+Type these shorthand commands in the chat box of your AI assistant (Claude, ChatGPT, Gemini, etc.) **after** you have copied and pasted the system prompt using `gatebreaker copy`:
+
+| Chat Command | Shorthand Prompt Action |
 | :--- | :--- |
 | `diagnose me` | Runs the full past/present/future career diagnostic with gap analysis. |
 | `gap analysis` | Assesses your profile across all 8 dimensions of Gaps. |
-| `honest review [resume/profile text]` | Delivers a brutally honest critique of your CV/LinkedIn with specific fixes. |
+| `honest review [resume text]` | Delivers a brutally honest critique of your CV/LinkedIn with specific fixes. |
 | `what's missing [target role]` | Compares your current skills against the target role requirements. |
 | `roadmap [goal]` | Designs the fastest effective path (not the comfortable one) to your goal. |
 | `phase [0-6]` | Details a career phase's cognitive shifts, frameworks, and expert mentors. |
@@ -213,6 +229,8 @@ Gatebreaker channels specific mentors based on your diagnosis:
 
 | Version | Key Changes |
 | :--- | :--- |
+| **1.1.2** | Optimized packaging boundaries. Refined `.gitignore` and `.npmignore` to exclude local environment configurations (`.env`), IDE settings (`.gemini/`, `.vscode/`, `.idea/`), local testing samples, and static landing page source files (`index.html`, `styles.css`) from published packages to minimize size and protect developer environment secrets. |
+| **1.1.1** | Resolved Windows path double-quote parsing bugs. Added native PDF extraction support via Mehmet Kozan's modern `PDFParse` ESM library. Expanded `compare` simulator command to support all 13 LLM API providers. Shifted defaults to high-performance, low-latency models (`gemini-1.5-flash`, `gpt-4o-mini`, `claude-3-5-haiku`). Decoupled child browser spawning from CLI process exits, and added global linking (`npm link`) support. |
 | **1.1.0** | Redesigned landing page with premium styles, version history table, FAQ schema, and copy-command toast. |
 | **1.0.9** | Rebranded repository to **Gatebreaker** and added side-by-side **Expert Simulator & Comparison Dashboard**. |
 | **1.0.8** | Added OIDC Trusted Publishing and modernized CI/CD workflow. Cleaned up redundant dependencies. |

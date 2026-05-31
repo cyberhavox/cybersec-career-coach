@@ -191,6 +191,7 @@ export async function generateComparisonHTML(profileData, targetRole, results, o
       letter-spacing: -0.5px;
       background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-violet) 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 4px;
       position: relative;

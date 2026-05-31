@@ -3,7 +3,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 import os from 'os';
 import prompts from 'prompts';
 import pc from 'picocolors';
@@ -20,13 +20,17 @@ async function extractTextFromFile(filePath) {
 
   if (ext === '.pdf') {
     try {
-      const { default: pdfParse } = await import('pdf-parse');
+      const { PDFParse } = await import('pdf-parse');
       const buffer = await fs.readFile(filePath);
-      const data = await pdfParse(buffer);
-      if (!data.text || data.text.trim().length < 20) {
+      const parser = new PDFParse({ data: buffer });
+      const data = await parser.getText();
+      const text = data.text;
+      await parser.destroy();
+
+      if (!text || text.trim().length < 20) {
         throw new Error('PDF appears to be image-only/scanned — no selectable text found.');
       }
-      return data.text;
+      return text;
     } catch (err) {
       throw new Error(`PDF parse error: ${err.message}`);
     }
@@ -207,8 +211,9 @@ async function runIntakeFlow() {
 
 // Call LLM API (Gemini, Anthropic, OpenAI, Groq, OpenRouter, Ollama)
 async function callLLM(systemPrompt, userMessage, provider, apiKey, options = {}) {
-  const modelName = provider === 'gemini' ? 'gemini-1.5-pro' : 'claude-3-5-sonnet-20241022';
-  
+  // Use fast, low-latency models for rapid CLI diagnostics and simulations
+  const modelName = provider === 'gemini' ? 'gemini-1.5-flash' : 'claude-3-5-haiku-20241022';
+
   if (provider === 'gemini') {
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
@@ -216,6 +221,7 @@ async function callLLM(systemPrompt, userMessage, provider, apiKey, options = {}
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+
           contents: [{ role: 'user', parts: [{ text: userMessage }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] }
         })
@@ -262,10 +268,10 @@ async function callLLM(systemPrompt, userMessage, provider, apiKey, options = {}
 
   if (provider === 'openai') {
     url = 'https://api.openai.com/v1/chat/completions';
-    model = 'gpt-4o';
+    model = 'gpt-4o-mini';
   } else if (provider === 'groq') {
     url = 'https://api.groq.com/openai/v1/chat/completions';
-    model = 'llama-3.1-70b-versatile';
+    model = 'llama-3.1-8b-instant';
   } else if (provider === 'openrouter') {
     url = 'https://openrouter.ai/api/v1/chat/completions';
     model = 'meta-llama/llama-3-8b-instruct:free';
@@ -331,17 +337,17 @@ async function callLLM(systemPrompt, userMessage, provider, apiKey, options = {}
 // Track details extraction
 function getTrackDetails(targetRole) {
   const role = (targetRole || '').toLowerCase();
-  
+
   if (
-    role.includes('soc') || 
-    role.includes('analyst') || 
-    role.includes('detect') || 
-    role.includes('defense') || 
+    role.includes('soc') ||
+    role.includes('analyst') ||
+    role.includes('detect') ||
+    role.includes('defense') ||
     role.includes('defensive') ||
-    role.includes('blue') || 
-    role.includes('incident') || 
-    role.includes('response') || 
-    role.includes('dfir') || 
+    role.includes('blue') ||
+    role.includes('incident') ||
+    role.includes('response') ||
+    role.includes('dfir') ||
     role.includes('forensic') ||
     role.includes('hunt') ||
     role.includes('threat')
@@ -381,12 +387,12 @@ function getTrackDetails(targetRole) {
       ]
     };
   } else if (
-    role.includes('pentest') || 
-    role.includes('penetration') || 
-    role.includes('red') || 
-    role.includes('offensive') || 
-    role.includes('exploit') || 
-    role.includes('hack') || 
+    role.includes('pentest') ||
+    role.includes('penetration') ||
+    role.includes('red') ||
+    role.includes('offensive') ||
+    role.includes('exploit') ||
+    role.includes('hack') ||
     role.includes('ethical') ||
     role.includes('bug') ||
     role.includes('bounty') ||
@@ -468,7 +474,7 @@ function getTrackDetails(targetRole) {
 function generateRoadmapHtml(answers, track) {
   const years = parseInt(answers.backgroundYears) || 0;
   const certsList = answers.backgroundCerts || 'None';
-  
+
   let gapKnowledge = years === 0 ? 85 : (years < 2 ? 55 : 30);
   let gapSkills = years === 0 ? 90 : (years < 2 ? 65 : 35);
   let gapTools = years === 0 ? 90 : (years < 2 ? 70 : 40);
@@ -542,6 +548,7 @@ function generateRoadmapHtml(answers, track) {
       letter-spacing: -0.5px;
       background: linear-gradient(135deg, #fff 0%, var(--accent-color) 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 5px;
     }
@@ -928,14 +935,14 @@ function generateRoadmapHtml(answers, track) {
                 ${lab.title}
               </div>
               ${lab.steps.map((step, stepIdx) => {
-                const stepId = `lab-${labIdx}-step-${stepIdx}`;
-                return `
+    const stepId = `lab-${labIdx}-step-${stepIdx}`;
+    return `
                   <label class="checkbox-item" for="${stepId}">
                     <input type="checkbox" id="${stepId}" onchange="saveProgress('${stepId}', this.checked)">
                     <span class="checkbox-label">${step}</span>
                   </label>
                 `;
-              }).join('')}
+  }).join('')}
             </div>
           `).join('')}
         </div>
@@ -1233,7 +1240,9 @@ async function main() {
         return;
       }
 
-      const resolvedPath = path.resolve(fileInput.path);
+      // Strip leading/trailing quotes if present (common when drag-dropping or copying paths)
+      const cleanedPath = fileInput.path.replace(/^["']|["']$/g, '').trim();
+      const resolvedPath = path.resolve(cleanedPath);
       const ext = path.extname(resolvedPath).toLowerCase();
       const supported = ['.txt', '.md', '.pdf', '.docx', '.rtf', '.json'];
 
@@ -1343,12 +1352,44 @@ async function main() {
 
     // 4. API keys check & run
     let apiProvider = null;
-    let apiKey = process.env.GEMINI_API_KEY || process.env.ANTHROPIC_API_KEY;
+    let apiKey = null;
 
     if (process.env.GEMINI_API_KEY) {
       apiProvider = 'gemini';
+      apiKey = process.env.GEMINI_API_KEY;
     } else if (process.env.ANTHROPIC_API_KEY) {
       apiProvider = 'anthropic';
+      apiKey = process.env.ANTHROPIC_API_KEY;
+    } else if (process.env.OPENAI_API_KEY) {
+      apiProvider = 'openai';
+      apiKey = process.env.OPENAI_API_KEY;
+    } else if (process.env.GROQ_API_KEY) {
+      apiProvider = 'groq';
+      apiKey = process.env.GROQ_API_KEY;
+    } else if (process.env.OPENROUTER_API_KEY) {
+      apiProvider = 'openrouter';
+      apiKey = process.env.OPENROUTER_API_KEY;
+    } else if (process.env.DEEPSEEK_API_KEY) {
+      apiProvider = 'deepseek';
+      apiKey = process.env.DEEPSEEK_API_KEY;
+    } else if (process.env.MISTRAL_API_KEY) {
+      apiProvider = 'mistral';
+      apiKey = process.env.MISTRAL_API_KEY;
+    } else if (process.env.COHERE_API_KEY) {
+      apiProvider = 'cohere';
+      apiKey = process.env.COHERE_API_KEY;
+    } else if (process.env.KRUTRIM_API_KEY) {
+      apiProvider = 'krutrim';
+      apiKey = process.env.KRUTRIM_API_KEY;
+    } else if (process.env.SARVAM_API_KEY) {
+      apiProvider = 'sarvam';
+      apiKey = process.env.SARVAM_API_KEY;
+    } else if (process.env.ZHIPU_API_KEY) {
+      apiProvider = 'zhipu';
+      apiKey = process.env.ZHIPU_API_KEY;
+    } else if (process.env.DASHSCOPE_API_KEY) {
+      apiProvider = 'qwen';
+      apiKey = process.env.DASHSCOPE_API_KEY;
     }
 
     const isPreloadedSample = ['cert_collector', 'career_pivot', 'stuck_soc'].includes(profileChoice.value);
@@ -1371,8 +1412,19 @@ async function main() {
           name: 'choice',
           message: 'No API keys found in environment. How would you like to proceed?',
           choices: [
-            { title: 'Enter a Google Gemini API Key', value: 'gemini' },
-            { title: 'Enter an Anthropic Claude API Key', value: 'anthropic' },
+            { title: 'Google Gemini (USA / Free tier available)', value: 'gemini' },
+            { title: 'Anthropic Claude (USA)', value: 'anthropic' },
+            { title: 'OpenAI GPT (USA)', value: 'openai' },
+            { title: 'Groq (USA / Free tier available)', value: 'groq' },
+            { title: 'OpenRouter (USA / Free models available)', value: 'openrouter' },
+            { title: 'DeepSeek (China / High-efficiency)', value: 'deepseek' },
+            { title: 'Mistral AI (Europe)', value: 'mistral' },
+            { title: 'Cohere (Europe)', value: 'cohere' },
+            { title: 'Krutrim AI (India)', value: 'krutrim' },
+            { title: 'Sarvam AI (India)', value: 'sarvam' },
+            { title: 'Zhipu GLM (China)', value: 'zhipu' },
+            { title: 'Alibaba Qwen (China)', value: 'qwen' },
+            { title: 'Ollama (Local / Completely Free)', value: 'ollama' },
             { title: 'Cancel simulation', value: 'cancel' }
           ]
         });
@@ -1382,13 +1434,39 @@ async function main() {
           return;
         }
 
-        const keyInput = await prompts({
-          type: 'password',
-          name: 'key',
-          message: `Please paste your ${apiChoice.choice === 'gemini' ? 'Gemini' : 'Anthropic'} API Key:`
-        });
-        apiKey = keyInput.key;
-        apiProvider = apiChoice.choice;
+        if (apiChoice.choice === 'ollama') {
+          apiProvider = 'ollama';
+          apiKey = 'ollama-local';
+        } else {
+          const keyNames = {
+            gemini: 'Gemini',
+            anthropic: 'Anthropic',
+            openai: 'OpenAI',
+            groq: 'Groq',
+            openrouter: 'OpenRouter',
+            deepseek: 'DeepSeek',
+            mistral: 'Mistral',
+            cohere: 'Cohere',
+            krutrim: 'Krutrim',
+            sarvam: 'Sarvam',
+            zhipu: 'Zhipu/GLM',
+            qwen: 'DashScope/Qwen'
+          };
+
+          const keyInput = await prompts({
+            type: 'password',
+            name: 'key',
+            message: `Please paste your ${keyNames[apiChoice.choice]} API Key:`
+          });
+
+          if (!keyInput.key) {
+            console.log(pc.red('No API key provided. Exiting.'));
+            return;
+          }
+
+          apiKey = keyInput.key;
+          apiProvider = apiChoice.choice;
+        }
       }
 
       if (!apiKey || !apiProvider) {
@@ -1396,15 +1474,32 @@ async function main() {
         return;
       }
 
-      console.log(pc.yellow(`\nGenerating comparative analysis via ${apiProvider === 'gemini' ? 'Gemini' : 'Anthropic'} for ${selectedExperts.length} experts...`));
+      const providerNames = {
+        gemini: 'Gemini',
+        anthropic: 'Claude',
+        openai: 'OpenAI GPT',
+        groq: 'Groq (Llama-3.1)',
+        openrouter: 'OpenRouter (Llama-3)',
+        deepseek: 'DeepSeek',
+        mistral: 'Mistral',
+        cohere: 'Cohere',
+        krutrim: 'Krutrim',
+        sarvam: 'Sarvam',
+        zhipu: 'Zhipu GLM',
+        qwen: 'Alibaba Qwen',
+        ollama: 'Local Ollama'
+      };
 
+      console.log(pc.yellow(`\nGenerating comparative analysis via ${providerNames[apiProvider]} for ${selectedExperts.length} experts...`));
+
+      let interval;
       try {
         const systemPromptPath = path.join(rootDir, 'gatebreaker.md');
         const systemPrompt = await fs.readFile(systemPromptPath, 'utf8');
 
         // Loading indicator
         let dots = 0;
-        const interval = setInterval(() => {
+        interval = setInterval(() => {
           process.stdout.write(`\r${pc.cyan('Simulating experts' + '.'.repeat(dots % 4) + ' '.repeat(3 - (dots % 4)))}`);
           dots++;
         }, 300);
@@ -1412,7 +1507,7 @@ async function main() {
         const promises = selectedExperts.map(async (expertKey) => {
           const expertInstruction = expertInstructions[expertKey];
           const expertSystemPrompt = systemPrompt + "\n\nCRITICAL INSTRUCTION: " + expertInstruction;
-          
+
           const userMsg = `
 Analyze the following profile for the target role: "${roleChoice.role}".
 Adopting the exclusive persona and philosophy of your character, deliver a brutally honest diagnostic review.
@@ -1433,6 +1528,10 @@ ${profileText}
           results[out.expertKey] = out.response;
         }
       } catch (err) {
+        if (interval) {
+          clearInterval(interval);
+          process.stdout.write('\r' + ' '.repeat(40) + '\r'); // Clear loading line
+        }
         console.log(pc.red('\nFailed to generate comparative analysis: ' + err.message));
         return;
       }
@@ -1450,16 +1549,18 @@ ${profileText}
     try {
       await generateComparisonHTML(profileData, roleChoice.role, results, outputPath);
       console.log(pc.green(`\n✓ Comparison dashboard generated successfully!`));
-      console.log(pc.cyan(`  File Location: file:///${outputPath.replace(/\\/g, '/')}`));
+      console.log(pc.cyan(`  Local Path:    ${outputPath}`));
+      console.log(pc.cyan(`  File URL:      file:///${outputPath.replace(/\\/g, '/')}`));
 
       console.log(pc.yellow('\nLaunching dashboard in your browser...'));
-      if (process.platform === 'win32') {
-        spawn('cmd', ['/c', `start "" "${outputPath}"`]);
-      } else if (process.platform === 'darwin') {
-        spawn('open', [outputPath]);
-      } else {
-        spawn('xdg-open', [outputPath]);
-      }
+      const launchCmd = process.platform === 'win32' ? `start "" "${outputPath}"` :
+                        process.platform === 'darwin' ? `open "${outputPath}"` :
+                        `xdg-open "${outputPath}"`;
+      exec(launchCmd, (error) => {
+        if (error) {
+          console.log(pc.red(`  Could not launch browser automatically: ${error.message}`));
+        }
+      });
     } catch (err) {
       console.log(pc.red(`Failed to generate HTML report: ${err.message}`));
     }
@@ -1479,7 +1580,7 @@ ${profileText}
       answers = await runIntakeFlow();
       try {
         await fs.writeFile(cachePath, JSON.stringify(answers, null, 2), 'utf8');
-      } catch (err) {}
+      } catch (err) { }
     }
 
     const reportPath = outputFile || path.join(process.cwd(), 'gatebreaker-roadmap.html');
@@ -1489,8 +1590,19 @@ ${profileText}
       const track = getTrackDetails(answers.targetRole);
       const htmlContent = generateRoadmapHtml(answers, track);
       await fs.writeFile(targetReportPath, htmlContent, 'utf8');
-      console.log(pc.green(`✓ Visual career roadmap generated successfully at:\n  ${targetReportPath}\n`));
-      console.log(pc.cyan('Open this HTML file in any browser to view your roadmap and track your lab checklist!'));
+      console.log(pc.green(`✓ Visual career roadmap generated successfully!`));
+      console.log(pc.cyan(`  Local Path:    ${targetReportPath}`));
+      console.log(pc.cyan(`  File URL:      file:///${targetReportPath.replace(/\\/g, '/')}\n`));
+
+      console.log(pc.yellow('Launching roadmap in your browser...'));
+      const launchCmd = process.platform === 'win32' ? `start "" "${targetReportPath}"` :
+                        process.platform === 'darwin' ? `open "${targetReportPath}"` :
+                        `xdg-open "${targetReportPath}"`;
+      exec(launchCmd, (error) => {
+        if (error) {
+          console.log(pc.red(`  Could not launch browser automatically: ${error.message}`));
+        }
+      });
     } catch (err) {
       console.error(pc.red('Error generating roadmap: ' + err.message));
     }
@@ -1508,7 +1620,7 @@ ${profileText}
       const cacheContent = await fs.readFile(cachePath, 'utf8');
       const cachedData = JSON.parse(cacheContent);
       console.log(pc.yellow(`Found answers from your last session (Target: ${pc.bold(cachedData.targetRole)}).\n`));
-      
+
       const confirmChoice = await prompts({
         type: 'confirm',
         name: 'value',
@@ -1723,13 +1835,14 @@ Q5 — Biggest Obstacle:
 
     console.log(pc.yellow(`\nChannelling the Coach via ${providerNames[apiProvider]}...`));
 
+    let interval;
     try {
       const systemPromptPath = path.join(rootDir, 'gatebreaker.md');
       const systemPrompt = await fs.readFile(systemPromptPath, 'utf8');
 
       // Loading indicator
       let dots = 0;
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         process.stdout.write(`\r${pc.cyan('Analyzing intake data' + '.'.repeat(dots % 4) + ' '.repeat(3 - (dots % 4)))}`);
         dots++;
       }, 300);
@@ -1774,6 +1887,10 @@ ${diagnosticResponse}
         }
       }
     } catch (err) {
+      if (interval) {
+        clearInterval(interval);
+        process.stdout.write('\r' + ' '.repeat(40) + '\r'); // Clear loading line
+      }
       console.log(pc.red('\nFailed to generate diagnostic: ' + err.message));
     }
     return;
