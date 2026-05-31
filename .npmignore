@@ -1,0 +1,11 @@
+.github/
+.git/
+.cursorrules
+.windsurfrules
+.clinerules
+.codyrules
+.pearai-rules
+package-lock.json
+node_modules/
+*.zip
+*.log

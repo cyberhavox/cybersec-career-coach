@@ -222,7 +222,58 @@ async function callLLM(systemPrompt, userMessage, provider, apiKey) {
 // Main logic
 async function main() {
   const args = process.argv.slice(2);
-  const command = args[0] || 'start';
+  let command = args[0] || 'start';
+
+  // If the first argument is a flag, default command to 'start'
+  if (command.startsWith('-')) {
+    command = 'start';
+  }
+
+  // Help command / fallback
+  if (args.includes('--help') || args.includes('-h') || command === 'help') {
+    console.log(`
+  ${pc.bold('Cybersec Career Coach CLI')}
+  
+  ${pc.yellow('Usage:')}
+    npx cybersec-career-coach [command] [options]
+
+  ${pc.yellow('Commands:')}
+    start / run                         - Start the interactive career intake and diagnostic (default)
+    caveman                             - Start the interactive diagnostic in Caveman style
+    copy                                - Copy the full system prompt to your clipboard
+    install                             - Install the modular skill folder to .skills/
+    install --global / -g               - Install the skill globally in ~/.gemini/config/skills
+
+  ${pc.yellow('Options:')}
+    -g, --gemini                        - Force Google Gemini API provider
+    -a, --anthropic                     - Force Anthropic Claude API provider
+    -o, --output <filename>             - Direct report saving path (bypasses save prompt)
+    -h, --help                          - Show this help message
+    `);
+    return;
+  }
+
+  let cliProvider = null;
+  let outputFile = null;
+
+  if (command === 'start' || command === 'run' || command === 'caveman') {
+    for (let i = 0; i < args.length; i++) {
+      const arg = args[i];
+      if (arg === '--gemini' || arg === '-g') {
+        cliProvider = 'gemini';
+      } else if (arg === '--anthropic' || arg === '-a') {
+        cliProvider = 'anthropic';
+      } else if (arg.startsWith('--output=')) {
+        outputFile = arg.split('=')[1];
+      } else if (arg === '-o') {
+        if (i + 1 < args.length) {
+          outputFile = args[i + 1];
+          i++;
+        }
+      }
+    }
+  }
+
 
   if (command === 'copy') {
     try {
@@ -332,27 +383,38 @@ Q5 — Biggest Obstacle:
 
     // Determine LLM options
     let apiProvider = null;
-    let apiKey = process.env.GEMINI_API_KEY || process.env.ANTHROPIC_API_KEY;
+    let apiKey = null;
 
-    if (process.env.GEMINI_API_KEY) {
-      apiProvider = 'gemini';
-    } else if (process.env.ANTHROPIC_API_KEY) {
-      apiProvider = 'anthropic';
+    if (cliProvider) {
+      apiProvider = cliProvider;
+      apiKey = cliProvider === 'gemini' ? process.env.GEMINI_API_KEY : process.env.ANTHROPIC_API_KEY;
+    } else {
+      if (process.env.GEMINI_API_KEY) {
+        apiProvider = 'gemini';
+        apiKey = process.env.GEMINI_API_KEY;
+      } else if (process.env.ANTHROPIC_API_KEY) {
+        apiProvider = 'anthropic';
+        apiKey = process.env.ANTHROPIC_API_KEY;
+      }
     }
 
     if (!apiKey) {
-      const apiChoice = await prompts({
-        type: 'select',
-        name: 'choice',
-        message: 'No LLM API keys found in environment. How would you like to proceed?',
-        choices: [
-          { title: 'Enter a Google Gemini API Key', value: 'gemini' },
-          { title: 'Enter an Anthropic Claude API Key', value: 'anthropic' },
-          { title: 'No key — Just display the compiled prompt (to paste manually)', value: 'none' }
-        ]
-      });
+      let selectedProvider = cliProvider;
+      if (!selectedProvider) {
+        const apiChoice = await prompts({
+          type: 'select',
+          name: 'choice',
+          message: 'No LLM API keys found in environment. How would you like to proceed?',
+          choices: [
+            { title: 'Enter a Google Gemini API Key', value: 'gemini' },
+            { title: 'Enter an Anthropic Claude API Key', value: 'anthropic' },
+            { title: 'No key — Just display the compiled prompt (to paste manually)', value: 'none' }
+          ]
+        });
+        selectedProvider = apiChoice.choice;
+      }
 
-      if (apiChoice.choice === 'none') {
+      if (selectedProvider === 'none') {
         console.log(pc.yellow('\nHere is your formatted intake payload. Copy and paste this to the Coach:'));
         console.log(pc.gray('--------------------------------------------------'));
         console.log(formattedUserMsg);
@@ -360,14 +422,14 @@ Q5 — Biggest Obstacle:
         return;
       }
 
-      if (apiChoice.choice === 'gemini' || apiChoice.choice === 'anthropic') {
+      if (selectedProvider === 'gemini' || selectedProvider === 'anthropic') {
         const keyInput = await prompts({
           type: 'password',
           name: 'key',
-          message: `Please paste your ${apiChoice.choice === 'gemini' ? 'Gemini' : 'Anthropic'} API Key:`
+          message: `Please paste your ${selectedProvider === 'gemini' ? 'Gemini' : 'Anthropic'} API Key:`
         });
         apiKey = keyInput.key;
-        apiProvider = apiChoice.choice;
+        apiProvider = selectedProvider;
       }
     }
 
@@ -398,16 +460,7 @@ Q5 — Biggest Obstacle:
       console.log(diagnosticResponse);
       console.log(pc.bold(pc.green('----------------------------------\n')));
 
-      const saveChoice = await prompts({
-        type: 'confirm',
-        name: 'value',
-        message: 'Would you like to save this diagnostic report as a Markdown file in your current directory?',
-        initial: true
-      });
-
-      if (saveChoice.value) {
-        const reportPath = path.join(process.cwd(), 'cybersec-career-coach-report.md');
-        const reportContent = `
+      const reportContent = `
 # Cybersec Career Coach Diagnostic Report
 
 **Generated on:** ${new Date().toLocaleDateString()}
@@ -416,9 +469,26 @@ Q5 — Biggest Obstacle:
 ---
 
 ${diagnosticResponse}
-        `.trim();
-        await fs.writeFile(reportPath, reportContent, 'utf8');
-        console.log(pc.green(`\n✓ Report saved successfully to:\n  ${reportPath}\n`));
+      `.trim();
+
+      let targetReportPath;
+      if (outputFile) {
+        targetReportPath = path.isAbsolute(outputFile) ? outputFile : path.resolve(process.cwd(), outputFile);
+        await fs.writeFile(targetReportPath, reportContent, 'utf8');
+        console.log(pc.green(`\n✓ Report saved successfully to:\n  ${targetReportPath}\n`));
+      } else {
+        const saveChoice = await prompts({
+          type: 'confirm',
+          name: 'value',
+          message: 'Would you like to save this diagnostic report as a Markdown file in your current directory?',
+          initial: true
+        });
+
+        if (saveChoice.value) {
+          targetReportPath = path.join(process.cwd(), 'cybersec-career-coach-report.md');
+          await fs.writeFile(targetReportPath, reportContent, 'utf8');
+          console.log(pc.green(`\n✓ Report saved successfully to:\n  ${targetReportPath}\n`));
+        }
       }
     } catch (err) {
       console.log(pc.red('\nFailed to generate diagnostic: ' + err.message));
@@ -431,11 +501,20 @@ ${diagnosticResponse}
   ${pc.bold('Cybersec Career Coach CLI')}
   
   ${pc.yellow('Usage:')}
-    npx cybersec-career-coach           ${pc.dim('- Start the interactive career intake and diagnostic')}
-    npx cybersec-career-coach caveman   ${pc.dim('- Start the interactive diagnostic in Caveman style')}
-    npx cybersec-career-coach copy      ${pc.dim('- Copy the full system prompt to your clipboard')}
-    npx cybersec-career-coach install   ${pc.dim('- Install the modular skill folder to .skills/')}
-    npx cybersec-career-coach install --global  ${pc.dim('- Install the skill globally in ~/.gemini/config/skills')}
+    npx cybersec-career-coach [command] [options]
+
+  ${pc.yellow('Commands:')}
+    start / run                         - Start the interactive career intake and diagnostic (default)
+    caveman                             - Start the interactive diagnostic in Caveman style
+    copy                                - Copy the full system prompt to your clipboard
+    install                             - Install the modular skill folder to .skills/
+    install --global / -g               - Install the skill globally in ~/.gemini/config/skills
+
+  ${pc.yellow('Options:')}
+    -g, --gemini                        - Force Google Gemini API provider
+    -a, --anthropic                     - Force Anthropic Claude API provider
+    -o, --output <filename>             - Direct report saving path (bypasses save prompt)
+    -h, --help                          - Show this help message
   `);
 }
 

@@ -45,6 +45,20 @@ Start an interactive terminal session that guides you through the Intake Questio
 npx cybersec-career-coach
 ```
 
+#### CLI Options:
+*   **Select LLM Provider**: Override auto-detection and specify which AI model to run the diagnostic on:
+    ```bash
+    # Force Google Gemini API
+    npx cybersec-career-coach --gemini
+    
+    # Force Anthropic Claude API
+    npx cybersec-career-coach --anthropic
+    ```
+*   **Direct File Output**: Directly write the generated report to a Markdown file without interactive confirmation prompts:
+    ```bash
+    npx cybersec-career-coach --output=my-diagnostics.md
+    ```
+
 ### Run the Diagnostic in Caveman Mode
 Run the same diagnostic questionnaire, but prompt the Coach to answer in a brutally honest, primitive "caveman" style:
 ```bash
@@ -61,18 +75,22 @@ npx cybersec-career-coach copy
 ### 3. Integrate as a Universal AI Skill
 Make this career coach context available inside your favorite AI environment:
 
-- **Cursor IDE**: Copy `.cursorrules` to the root of your workspace.
-- **Windsurf IDE**: Copy `.windsurfrules` to the root of your workspace.
-- **Claude Code & Google Antigravity**:
-  - Local workspace installation:
-    ```bash
-    npx cybersec-career-coach install
-    ```
-  - Global user installation:
-    ```bash
-    npx cybersec-career-coach install --global
-    ```
-- **ChatGPT Custom GPTs / Claude.ai Projects / Gemini System Instructions**: Run `npx cybersec-career-coach copy` to copy the system prompt, and paste it into the system instructions field of your AI agent.
+*   **Cursor IDE**: Copy `.cursorrules` to the root of your workspace.
+*   **Windsurf IDE**: Copy `.windsurfrules` to the root of your workspace.
+*   **Roo Code / Cline**: Copy `.clinerules` to the root of your workspace.
+*   **VS Code GitHub Copilot**: Copy `.github/copilot-instructions.md` to your workspace.
+*   **Sourcegraph Cody**: Copy `.codyrules` to the root of your workspace.
+*   **PearAI**: Copy `.pearai-rules` to the root of your workspace.
+*   **Claude Code & Google Antigravity**:
+    *   Local workspace installation:
+        ```bash
+        npx cybersec-career-coach install
+        ```
+    *   Global user installation:
+        ```bash
+        npx cybersec-career-coach install --global
+        ```
+*   **ChatGPT Custom GPTs / Claude.ai Projects / Gemini System Instructions**: Run `npx cybersec-career-coach copy` to copy the system prompt, and paste it into the system instructions field of your AI agent.
 
 ---
 
