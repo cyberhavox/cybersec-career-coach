@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
+import os from 'os';
 import prompts from 'prompts';
 import pc from 'picocolors';
 
@@ -53,9 +54,11 @@ function copyToClipboard(text) {
 
 // CLI Header
 function printHeader() {
-  console.log(pc.cyan(`
-  🔐  ${pc.bold('CYBERSEC CAREER COACH')}
-  ${pc.dim('Brutally Honest Career Diagnostics & Actionable Roadmaps')}
+  console.log(pc.magenta(`
+   ${pc.bold(pc.cyan('      🛡️  CYBERSEC CAREER COACH  🛡️'))}
+   ${pc.dim('==============================================')}
+   ${pc.bold('Brutally Honest Diagnostics & Actionable Roadmaps')}
+   ${pc.dim('==============================================')}
   `));
 }
 
@@ -259,7 +262,42 @@ async function main() {
 
   if (command === 'start' || command === 'run' || command === 'caveman') {
     printHeader();
-    const answers = await runIntakeFlow();
+
+    const cachePath = path.join(os.homedir(), '.cybersec-career-coach-cache.json');
+    let answers;
+    let useCached = false;
+
+    try {
+      const cacheContent = await fs.readFile(cachePath, 'utf8');
+      const cachedData = JSON.parse(cacheContent);
+      console.log(pc.yellow(`Found answers from your last session (Target: ${pc.bold(cachedData.targetRole)}).\n`));
+      
+      const confirmChoice = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: 'Would you like to reuse these cached answers?',
+        initial: true
+      });
+
+      if (confirmChoice.value) {
+        answers = cachedData;
+        useCached = true;
+        console.log(pc.green('\n✓ Loaded cached answers.\n'));
+      } else {
+        console.log(''); // spacer
+      }
+    } catch (e) {
+      // Cache doesn't exist or is invalid, proceed to questionnaire
+    }
+
+    if (!useCached) {
+      answers = await runIntakeFlow();
+      try {
+        await fs.writeFile(cachePath, JSON.stringify(answers, null, 2), 'utf8');
+      } catch (e) {
+        // Silent catch for cache write errors
+      }
+    }
 
     // Setup User prompt
     let formattedUserMsg = `
@@ -359,6 +397,29 @@ Q5 — Biggest Obstacle:
       console.log(pc.bold(pc.green('\n--- COACH DIAGNOSTIC RESPONSE ---')));
       console.log(diagnosticResponse);
       console.log(pc.bold(pc.green('----------------------------------\n')));
+
+      const saveChoice = await prompts({
+        type: 'confirm',
+        name: 'value',
+        message: 'Would you like to save this diagnostic report as a Markdown file in your current directory?',
+        initial: true
+      });
+
+      if (saveChoice.value) {
+        const reportPath = path.join(process.cwd(), 'cybersec-career-coach-report.md');
+        const reportContent = `
+# Cybersec Career Coach Diagnostic Report
+
+**Generated on:** ${new Date().toLocaleDateString()}
+**Target Role:** ${answers.targetRole} (${answers.targetSeniority})
+
+---
+
+${diagnosticResponse}
+        `.trim();
+        await fs.writeFile(reportPath, reportContent, 'utf8');
+        console.log(pc.green(`\n✓ Report saved successfully to:\n  ${reportPath}\n`));
+      }
     } catch (err) {
       console.log(pc.red('\nFailed to generate diagnostic: ' + err.message));
     }

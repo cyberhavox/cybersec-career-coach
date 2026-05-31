@@ -58,16 +58,21 @@ npx cybersec-career-coach copy
 ```
 *Then paste it directly as a System Prompt into Claude Projects, ChatGPT Custom GPTs, or Google AI Studio.*
 
-### 3. Install the Modular Agentic Skill
-If you use developer agents (like Claude Code or Google Antigravity), you can install the custom skill:
-- **Local installation** (in your current project):
-  ```bash
-  npx cybersec-career-coach install
-  ```
-- **Global installation** (in your user config directory):
-  ```bash
-  npx cybersec-career-coach install --global
-  ```
+### 3. Integrate as a Universal AI Skill
+Make this career coach context available inside your favorite AI environment:
+
+- **Cursor IDE**: Copy `.cursorrules` to the root of your workspace.
+- **Windsurf IDE**: Copy `.windsurfrules` to the root of your workspace.
+- **Claude Code & Google Antigravity**:
+  - Local workspace installation:
+    ```bash
+    npx cybersec-career-coach install
+    ```
+  - Global user installation:
+    ```bash
+    npx cybersec-career-coach install --global
+    ```
+- **ChatGPT Custom GPTs / Claude.ai Projects / Gemini System Instructions**: Run `npx cybersec-career-coach copy` to copy the system prompt, and paste it into the system instructions field of your AI agent.
 
 ---
 
