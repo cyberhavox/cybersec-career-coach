@@ -65,7 +65,20 @@ Run the same diagnostic questionnaire, but prompt the Coach to answer in a bruta
 npx cybersec-career-coach caveman
 ```
 
-### 2. Copy the System Prompt to Clipboard
+### 2. Generate an Interactive Visual Roadmap & Lab Checklist
+Generate a highly polished, interactive local HTML/SVG roadmap and hands-on lab checklist based on your career profile:
+```bash
+npx cybersec-career-coach roadmap
+```
+*   Determines your security track (**Offensive**, **Defensive**, or **GRC**) based on your target role.
+*   Outputs a beautiful, customized `cybersec-career-coach-roadmap.html` file.
+*   Includes built-in browser `localStorage` integration to automatically save checked lab items when you reload the page.
+*   Specify a custom output path using the `--output` or `-o` flag:
+    ```bash
+    npx cybersec-career-coach roadmap --output=my-visual-roadmap.html
+    ```
+
+### 3. Copy the System Prompt to Clipboard
 Copy the complete, ready-to-paste system prompt directly to your clipboard:
 ```bash
 npx cybersec-career-coach copy
