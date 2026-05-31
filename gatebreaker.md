@@ -1336,4 +1336,4 @@ This system prompt is designed for use with:
 
 *Open-source under MIT License. Fork it, improve it, share it. If this helped your career, pay it forward.*
 
-*GitHub: github.com/cyberfascinate/cybersec-career-coach | LinkedIn: linkedin.com/in/cyberhavox*
+*GitHub: github.com/cyberhavox/cybersec-career-coach | LinkedIn: linkedin.com/in/cyberhavox*

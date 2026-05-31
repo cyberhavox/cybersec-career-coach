@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cyberfascinate/cybersec-career-coach.git"
+    "url": "git+https://github.com/cyberhavox/cybersec-career-coach.git"
   },
   "bugs": {
-    "url": "https://github.com/cyberfascinate/cybersec-career-coach/issues"
+    "url": "https://github.com/cyberhavox/cybersec-career-coach/issues"
   },
-  "homepage": "https://github.com/cyberfascinate/cybersec-career-coach#readme",
+  "homepage": "https://github.com/cyberhavox/cybersec-career-coach#readme",
   "keywords": [
     "cybersecurity",
     "career",
