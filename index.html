@@ -1,913 +1,2145 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Gatebreaker — God-tier cybersecurity career diagnostic CLI. 8-dimension gap analysis, 40+ expert personas, visual roadmaps. Run npx gatebreaker.">
+  <meta name="description"
+    content="Gatebreaker — God-tier cybersecurity career diagnostic CLI. 8-dimension gap analysis, 40+ expert personas, visual roadmaps. Run npx gatebreaker.">
   <meta name="theme-color" content="#000000">
   <title>Gatebreaker — Break Into Cybersecurity. For Real.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
   <style>
-/* ─────────────── RESET ─────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Inter',sans-serif;background:#000;color:#fafafa;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-ul{list-style:none}
-button{font-family:inherit;cursor:pointer;border:none;background:none}
-img,svg{display:block}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    /* ─────────────── RESET ─────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* ─────────────── NOISE OVERLAY ─────────────── */
-body::after{
-  content:'';position:fixed;inset:0;z-index:999;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat:repeat;background-size:128px;opacity:.025;
-}
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px
+    }
 
-/* ─────────────── DOT GRID ─────────────── */
-.grid-bg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:radial-gradient(rgba(255,255,255,.1) 1px, transparent 1px);
-  background-size:32px 32px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
-}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: #fafafa;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
 
-/* ─────────────── LAYOUT ─────────────── */
-.w{max-width:1120px;margin:0 auto;padding:0 1.5rem;position:relative;z-index:2}
+    a {
+      color: inherit;
+      text-decoration: none
+    }
 
-/* ─────────────── NAVBAR ─────────────── */
-.nav{
-  position:fixed;top:1.25rem;left:1.25rem;right:1.25rem;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:.65rem 1.25rem;
-  background:rgba(0,0,0,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.08);border-radius:100px;
-  transition:border-color .2s ease;
-}
-.nav:hover{border-color:rgba(147,51,234,.25)}
-.navlogo{
-  display:flex;align-items:center;gap:.6rem;
-  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.05em;
-}
-.navlogo-icon{
-  width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex-shrink:0;
-  background:linear-gradient(135deg,#9333ea,#7c3aed);
-}
-.navlogo-icon svg{color:#fff}
-.navmenu{display:flex;align-items:center;gap:.1rem}
-.navmenu a{
-  display:flex;align-items:center;height:40px;padding:0 .85rem;
-  font-size:.84rem;font-weight:500;color:#71717a;border-radius:100px;
-  transition:color .15s,background .15s;
-}
-.navmenu a:hover{color:#fafafa;background:rgba(255,255,255,.05)}
-.navmenu a:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
-.nav-github{
-  display:flex;align-items:center;gap:.45rem;height:36px;padding:0 1rem;
-  font-size:.82rem;font-weight:600;color:#fafafa;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;
-  transition:background .2s,border-color .2s;
-}
-.nav-github:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.18)}
-.nav-github:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
-.hamburger{
-  display:none;color:#fafafa;padding:.45rem;border-radius:8px;
-  min-width:40px;min-height:40px;align-items:center;justify-content:center;
-  transition:background .15s;
-}
-.hamburger:hover{background:rgba(255,255,255,.07)}
+    ul {
+      list-style: none
+    }
 
-/* ─────────────── HERO ─────────────── */
-.hero{
-  position:relative;min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:8rem 0 6rem;overflow:hidden;
-}
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none
+    }
 
-/* Aurora glow */
-.aurora{
-  position:absolute;pointer-events:none;
-  width:900px;height:900px;
-  top:50%;left:50%;
-  transform:translate(-50%,-55%);
-  background:conic-gradient(
-    from 0deg at 50% 50%,
-    rgba(147,51,234,0) 0deg,
-    rgba(147,51,234,.35) 60deg,
-    rgba(6,182,212,.25) 120deg,
-    rgba(147,51,234,0) 180deg,
-    rgba(74,222,128,.15) 240deg,
-    rgba(147,51,234,0) 300deg,
-    rgba(147,51,234,0) 360deg
-  );
-  filter:blur(80px);border-radius:50%;
-  animation:aurora-rot 10s linear infinite;
-}
-@keyframes aurora-rot{from{transform:translate(-50%,-55%) rotate(0deg)}to{transform:translate(-50%,-55%) rotate(360deg)}}
-.aurora-2{
-  position:absolute;pointer-events:none;
-  width:600px;height:600px;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  background:radial-gradient(ellipse,rgba(124,58,237,.2) 0%,transparent 65%);
-  filter:blur(40px);border-radius:50%;
-  animation:aurora-pulse 4s ease-in-out infinite alternate;
-}
-@keyframes aurora-pulse{from{transform:translate(-50%,-50%) scale(1);opacity:.6}to{transform:translate(-50%,-50%) scale(1.15);opacity:1}}
+    img,
+    svg {
+      display: block
+    }
 
-/* Hero content */
-.hero-inner{position:relative;z-index:1}
-.hero-pill{
-  display:inline-flex;align-items:center;gap:.5rem;
-  padding:.35rem 1rem;margin-bottom:2.5rem;
-  background:rgba(147,51,234,.1);border:1px solid rgba(147,51,234,.3);
-  border-radius:100px;font-size:.78rem;font-weight:600;letter-spacing:.08em;color:#a78bfa;
-}
-.hero-pill-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:dot-blink 2s ease-in-out infinite}
-@keyframes dot-blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-h1{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:clamp(3.5rem,8vw,6.5rem);
-  font-weight:800;line-height:1;letter-spacing:-.04em;
-  margin-bottom:1.75rem;
-}
-.hero-h1 .line2{
-  display:block;
-  background:linear-gradient(135deg,#c084fc 0%,#818cf8 35%,#22d3ee 75%,#4ade80 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:grad-shift 6s ease infinite alternate;background-size:200% auto;
-}
-@keyframes grad-shift{from{background-position:0% center}to{background-position:100% center}}
-.hero-sub{
-  font-size:1.2rem;color:#71717a;line-height:1.7;
-  max-width:44ch;margin:0 auto 3rem;font-weight:400;
-}
-.hero-sub strong{color:#a1a1aa;font-weight:500}
-.hero-actions{display:flex;justify-content:center;align-items:center;gap:.875rem;flex-wrap:wrap}
+    @media(prefers-reduced-motion:reduce) {
 
-/* Command box */
-.cmdbox{
-  display:inline-flex;align-items:center;gap:.75rem;
-  padding:.8rem 1rem .8rem 1.4rem;
-  background:#0a0a0a;
-  border:1px solid rgba(255,255,255,.1);border-radius:12px;
-  transition:border-color .2s;
-}
-.cmdbox:hover{border-color:rgba(147,51,234,.4)}
-.cmdbox code{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:#4ade80;letter-spacing:.02em}
-.copy-btn{
-  display:flex;align-items:center;justify-content:center;
-  width:32px;height:32px;border-radius:8px;color:#52525b;
-  transition:color .15s,background .15s;
-}
-.copy-btn:hover{color:#9333ea;background:rgba(147,51,234,.1)}
-.copy-btn:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important
+      }
+    }
 
-/* Buttons */
-.btn-p{
-  display:inline-flex;align-items:center;gap:.5rem;
-  padding:.8rem 1.75rem;
-  background:#9333ea;color:#fff;font-weight:600;font-size:.95rem;border-radius:12px;
-  min-height:48px;position:relative;overflow:hidden;
-  transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s;
-}
-.btn-p::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
-.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(147,51,234,.5)}
-.btn-p:hover::before{opacity:1}
-.btn-p:focus-visible{outline:2px solid #c084fc;outline-offset:3px}
-.btn-p:active{transform:translateY(0)}
-.btn-g{
-  display:inline-flex;align-items:center;gap:.5rem;
-  padding:.8rem 1.5rem;min-height:48px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
-  color:#d4d4d8;font-weight:500;font-size:.95rem;border-radius:12px;
-  transition:background .2s,border-color .2s,transform .2s cubic-bezier(.16,1,.3,1);
-}
-.btn-g:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
-.btn-g:focus-visible{outline:2px solid #9333ea;outline-offset:3px}
+    /* ─────────────── NOISE OVERLAY ─────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 128px;
+      opacity: .025;
+    }
 
-/* ─────────────── STATS ─────────────── */
-.stats{
-  padding:2.5rem 0;
-  border-top:1px solid rgba(255,255,255,.05);
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-.stats-row{display:flex;justify-content:center;flex-wrap:wrap}
-.stat{flex:1;min-width:120px;text-align:center;padding:1.25rem 2rem;position:relative}
-.stat+.stat::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:1px;background:rgba(255,255,255,.06)}
-.sval{
-  font-family:'Space Grotesk',sans-serif;font-size:2.2rem;font-weight:800;line-height:1;
-  background:linear-gradient(135deg,#c084fc,#818cf8);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.slabel{font-size:.76rem;color:#52525b;font-weight:500;letter-spacing:.07em;text-transform:uppercase;margin-top:.35rem}
+    /* ─────────────── DOT GRID ─────────────── */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
+    }
 
-/* ─────────────── SECTION HEADER ─────────────── */
-.sec-label{
-  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.7rem;
-  font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:#9333ea;
-  padding:.28rem .75rem;background:rgba(147,51,234,.08);border:1px solid rgba(147,51,234,.15);
-  border-radius:100px;margin-bottom:1.25rem;
-}
-.sec-h2{
-  font-family:'Space Grotesk',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.05;
-  font-size:clamp(2rem,3.5vw,3rem);margin-bottom:.875rem;
-}
-.sec-sub{font-size:1rem;color:#71717a;line-height:1.75;max-width:54ch}
-.sec-hdr{margin-bottom:4rem}
-.center{text-align:center}.center .sec-sub{margin:0 auto}
+    /* ─────────────── LAYOUT ─────────────── */
+    .w {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 2
+    }
 
-/* ─────────────── FEATURES — GRADIENT BORDER CARDS ─────────────── */
-.features{padding:8rem 0}
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:24px;overflow:hidden}
-.feat-card{
-  background:#000;padding:2.25rem;position:relative;
-  transition:background .25s;cursor:default;
-}
-.feat-card::before{
-  content:'';position:absolute;inset:0;opacity:0;transition:opacity .35s;pointer-events:none;
-  background:radial-gradient(ellipse 60% 60% at var(--mx,50%) var(--my,50%),rgba(147,51,234,.1),transparent);
-}
-.feat-card:hover{background:#080808}
-.feat-card:hover::before{opacity:1}
-.fi{
-  width:40px;height:40px;border-radius:10px;display:grid;place-items:center;
-  margin-bottom:1.5rem;
-}
-.fi-p{background:rgba(147,51,234,.12);color:#a855f7}
-.fi-c{background:rgba(6,182,212,.12);color:#22d3ee}
-.fi-g{background:rgba(74,222,128,.12);color:#4ade80}
-.fi-a{background:rgba(251,191,36,.12);color:#fbbf24}
-.fi-r{background:rgba(248,113,113,.12);color:#f87171}
-.fi-o{background:rgba(251,146,60,.12);color:#fb923c}
-.feat-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.5rem;letter-spacing:-.01em}
-.feat-card p{font-size:.875rem;color:#71717a;line-height:1.7}
+    /* ─────────────── NAVBAR ─────────────── */
+    .nav {
+      position: fixed;
+      top: 1.25rem;
+      left: 1.25rem;
+      right: 1.25rem;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .65rem 1.25rem;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 100px;
+      transition: border-color .2s ease;
+    }
 
-/* ─────────────── 8 DIMENSIONS ─────────────── */
-.dims{padding:8rem 0;background:#050505;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
-.dims-wrap{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
-.dims-left{position:sticky;top:7rem}
-.dims-left .sec-sub{margin-bottom:2.5rem}
-.dims-right{display:flex;flex-direction:column;gap:.75rem}
-.dim-row{
-  display:flex;align-items:flex-start;gap:1.25rem;
-  padding:1.25rem 1.5rem;
-  background:rgba(255,255,255,.02);
-  border:1px solid rgba(255,255,255,.06);border-radius:14px;
-  transition:border-color .2s,background .2s,transform .2s cubic-bezier(.16,1,.3,1);
-  cursor:default;
-}
-.dim-row:hover{background:rgba(147,51,234,.05);border-color:rgba(147,51,234,.25);transform:translateX(6px)}
-.dim-n{
-  font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;
-  color:#9333ea;background:rgba(147,51,234,.1);padding:.2rem .5rem;
-  border-radius:6px;white-space:nowrap;flex-shrink:0;margin-top:.15rem;
-}
-.dim-row h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:.25rem}
-.dim-row p{font-size:.83rem;color:#71717a;line-height:1.6}
+    .nav:hover {
+      border-color: rgba(147, 51, 234, .25)
+    }
 
-/* ─────────────── EXPERT MARQUEE ─────────────── */
-.experts{padding:8rem 0;overflow:hidden}
-.experts .sec-hdr{text-align:center;margin-bottom:3rem}
-.mwrap{display:flex;flex-direction:column;gap:.75rem}
-.mtrack{display:flex;gap:.75rem;width:max-content;animation:march-l 26s linear infinite}
-.mtrack.rv{animation:march-r 26s linear infinite}
-.mwrap:hover .mtrack{animation-play-state:paused}
-@keyframes march-l{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes march-r{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.epill{
-  display:flex;align-items:center;gap:.55rem;
-  padding:.55rem 1.1rem;white-space:nowrap;
-  background:#0a0a0a;border:1px solid rgba(255,255,255,.07);border-radius:100px;
-  font-size:.84rem;font-weight:500;color:#71717a;cursor:default;
-  transition:border-color .2s,color .2s,background .2s;
-}
-.epill svg{flex-shrink:0;color:#9333ea}
-.epill:hover{border-color:rgba(147,51,234,.35);color:#fafafa;background:rgba(147,51,234,.07)}
+    .navlogo {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: .05em;
+    }
 
-/* ─────────────── HOW IT WORKS ─────────────── */
-.how{padding:8rem 0;background:#050505;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
-.how-steps{max-width:700px;margin:4rem auto 0;display:flex;flex-direction:column;gap:0}
-.howstep{
-  display:grid;grid-template-columns:64px 1fr;gap:2rem;
-  padding:2.25rem 0;border-bottom:1px solid rgba(255,255,255,.05);position:relative;
-}
-.howstep:last-child{border-bottom:none}
-.hsnum{
-  width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;
-  font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:1.1rem;
-  background:rgba(147,51,234,.08);border:1px solid rgba(147,51,234,.2);color:#9333ea;
-}
-.hstext h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem;letter-spacing:-.01em}
-.hstext p{font-size:.875rem;color:#71717a;line-height:1.7;margin-bottom:1rem}
-.hscmd{
-  display:inline-flex;align-items:center;gap:.6rem;
-  padding:.4rem .9rem;background:#0a0a0a;
-  border:1px solid rgba(255,255,255,.08);border-radius:8px;
-}
-.hscmd code{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#4ade80}
+    .navlogo-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #9333ea, #7c3aed);
+    }
 
-/* ─────────────── VERSION ─────────────── */
-.versions{padding:8rem 0}
-.vtable-wrap{
-  width:100%;overflow-x:auto;
-  border:1px solid rgba(255,255,255,.07);border-radius:20px;
-  background:#050505;margin-top:3.5rem;
-}
-table{width:100%;border-collapse:collapse;font-size:.875rem}
-th,td{padding:1rem 1.5rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)}
-th{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#52525b;background:rgba(5,5,5,.6)}
-tr:last-child td{border-bottom:none}
-tbody tr{transition:background .15s}
-tbody tr:hover td{background:rgba(147,51,234,.03)}
-.vbadge{
-  display:inline-flex;align-items:center;gap:.3rem;
-  padding:.22rem .65rem;background:rgba(147,51,234,.1);
-  border:1px solid rgba(147,51,234,.2);border-radius:100px;
-  font-family:'JetBrains Mono',monospace;font-size:.76rem;font-weight:700;color:#a855f7;
-  white-space:nowrap;
-}
-.vbadge.new{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.25);color:#4ade80;white-space:nowrap}
-.vdate{color:#52525b;font-size:.825rem;white-space:nowrap}
+    .navlogo-icon svg {
+      color: #fff
+    }
 
-/* ─────────────── FAQ ─────────────── */
-.faq{padding:8rem 0;background:#050505;border-top:1px solid rgba(255,255,255,.05)}
-.faqlist{max-width:760px;margin:3.5rem auto 0;display:flex;flex-direction:column;gap:.625rem}
-.faqitem{
-  background:#0a0a0a;border:1px solid rgba(255,255,255,.07);
-  border-radius:16px;overflow:hidden;
-  transition:border-color .2s;
-}
-.faqitem:hover{border-color:rgba(147,51,234,.2)}
-.faqbtn{
-  width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  padding:1.35rem 1.75rem;color:#fafafa;text-align:left;
-  font-family:'Space Grotesk',sans-serif;font-size:.975rem;font-weight:600;letter-spacing:-.01em;
-  min-height:44px;transition:color .2s;
-}
-.faqbtn:hover{color:#c084fc}
-.faqbtn:focus-visible{outline:2px solid #9333ea;outline-offset:2px}
-.faqbtn .icon{flex-shrink:0;color:#52525b;transition:transform .35s cubic-bezier(.16,1,.3,1),color .2s}
-.faqitem.open .faqbtn .icon{transform:rotate(45deg);color:#9333ea}
-.faqbody{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.16,1,.3,1)}
-.faqitem.open .faqbody{max-height:400px}
-.faqbody p{padding:0 1.75rem 1.5rem;font-size:.875rem;color:#71717a;line-height:1.8}
+    .navmenu {
+      display: flex;
+      align-items: center;
+      gap: .1rem
+    }
 
-/* ─────────────── CTA ─────────────── */
-.cta{
-  padding:10rem 0;text-align:center;position:relative;overflow:hidden;
-  background:radial-gradient(ellipse 70% 70% at 50% 100%, rgba(88,28,135,.25) 0%, transparent 60%),#000;
-}
-.cta-ring{
-  position:absolute;border-radius:50%;pointer-events:none;border:1px solid rgba(147,51,234,.08);
-  top:50%;left:50%;transform:translate(-50%,-50%);
-  animation:cta-pulse 3.5s ease-in-out infinite;
-}
-.cr1{width:400px;height:400px}
-.cr2{width:650px;height:650px;animation-delay:.6s;opacity:.6}
-.cr3{width:900px;height:900px;animation-delay:1.2s;opacity:.3}
-@keyframes cta-pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.4}50%{transform:translate(-50%,-50%) scale(1.04);opacity:.8}}
-.cta .w{position:relative;z-index:1}
-.cta-h{
-  font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);
-  font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:1.25rem;
-}
-.cta-sub{font-size:1.1rem;color:#71717a;margin-bottom:3rem}
-.cta-actions{display:flex;justify-content:center;align-items:center;gap:.875rem;flex-wrap:wrap}
+    .navmenu a {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      padding: 0 .85rem;
+      font-size: .84rem;
+      font-weight: 500;
+      color: #71717a;
+      border-radius: 100px;
+      transition: color .15s, background .15s;
+    }
 
-/* ─────────────── FOOTER ─────────────── */
-footer{padding:4rem 0 2.5rem;border-top:1px solid rgba(255,255,255,.05)}
-.footgrid{display:grid;grid-template-columns:2fr 1fr;gap:5rem;margin-bottom:3.5rem}
-.footbrand .navlogo{margin-bottom:1rem}
-.footbrand p{font-size:.875rem;color:#52525b;line-height:1.7;max-width:38ch}
-.footlinks h4{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#52525b;margin-bottom:1.25rem}
-.footlinks ul{display:flex;flex-direction:column;gap:.5rem}
-.footlinks a{
-  display:flex;align-items:center;gap:.55rem;font-size:.875rem;color:#71717a;
-  min-height:40px;transition:color .15s;
-}
-.footlinks a:hover{color:#9333ea}
-.footlinks a:focus-visible{outline:2px solid #9333ea;outline-offset:2px;border-radius:4px}
-.footbottom{
-  display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
-  padding-top:2rem;border-top:1px solid rgba(255,255,255,.05);
-  font-size:.8rem;color:#3f3f46;
-}
-.footbottom a{color:#52525b;transition:color .15s}
-.footbottom a:hover{color:#9333ea}
+    .navmenu a:hover {
+      color: #fafafa;
+      background: rgba(255, 255, 255, .05)
+    }
 
-/* ─────────────── TOAST ─────────────── */
-.toast{
-  position:fixed;bottom:2rem;right:2rem;z-index:60;
-  display:flex;align-items:center;gap:.55rem;
-  padding:.8rem 1.35rem;
-  background:rgba(10,10,10,.95);border:1px solid rgba(74,222,128,.3);
-  border-radius:12px;font-size:.875rem;font-weight:600;color:#4ade80;
-  backdrop-filter:blur(20px);
-  box-shadow:0 0 0 1px rgba(74,222,128,.1),0 16px 40px rgba(0,0,0,.6);
-  transform:translateY(100px);opacity:0;pointer-events:none;
-  transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s;
-}
-.toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+    .navmenu a:focus-visible {
+      outline: 2px solid #9333ea;
+      outline-offset: 2px
+    }
 
-/* ─────────────── REVEAL ─────────────── */
-.rv{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s ease}
-.rv.in{opacity:1;transform:none}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+    .nav-github {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      height: 36px;
+      padding: 0 1rem;
+      font-size: .82rem;
+      font-weight: 600;
+      color: #fafafa;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 100px;
+      transition: background .2s, border-color .2s;
+    }
 
-/* ─────────────── RESPONSIVE ─────────────── */
-@media(max-width:900px){
-  .feat-grid{grid-template-columns:1fr 1fr}
-  .dims-wrap{grid-template-columns:1fr;gap:3rem}
-  .dims-left{position:static}
-  .footgrid{grid-template-columns:1fr;gap:2.5rem}
-}
-@media(max-width:640px){
-  .navmenu{display:none}
-  .navmenu.open{
-    display:flex;flex-direction:column;
-    position:absolute;top:calc(100% + .75rem);left:0;right:0;
-    background:rgba(0,0,0,.95);backdrop-filter:blur(24px);
-    border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:.5rem;
-  }
-  .navmenu.open a{height:48px;border-radius:12px}
-  .hamburger{display:flex}
-  .feat-grid{grid-template-columns:1fr;border-radius:20px}
-  .howstep{grid-template-columns:1fr;gap:1rem}
-  .hero-h1{font-size:3rem}
-  .stat+.stat::before{display:none}
-  .stat{padding:1.25rem}
-  .footbottom{flex-direction:column;text-align:center}
-}
-@media(max-width:480px){
-  .feat-grid{border-radius:16px}
-  .hero-sub{font-size:1rem}
-}
+    .nav-github:hover {
+      background: rgba(255, 255, 255, .12);
+      border-color: rgba(255, 255, 255, .18)
+    }
+
+    .nav-github:focus-visible {
+      outline: 2px solid #9333ea;
+      outline-offset: 2px
+    }
+
+    .hamburger {
+      display: none;
+      color: #fafafa;
+      padding: .45rem;
+      border-radius: 8px;
+      min-width: 40px;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+    }
+
+    .hamburger:hover {
+      background: rgba(255, 255, 255, .07)
+    }
+
+    /* ─────────────── HERO ─────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 0 6rem;
+      overflow: hidden;
+    }
+
+    /* Aurora glow */
+    .aurora {
+      position: absolute;
+      pointer-events: none;
+      width: 900px;
+      height: 900px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      background: conic-gradient(from 0deg at 50% 50%,
+          rgba(147, 51, 234, 0) 0deg,
+          rgba(147, 51, 234, .35) 60deg,
+          rgba(6, 182, 212, .25) 120deg,
+          rgba(147, 51, 234, 0) 180deg,
+          rgba(74, 222, 128, .15) 240deg,
+          rgba(147, 51, 234, 0) 300deg,
+          rgba(147, 51, 234, 0) 360deg);
+      filter: blur(80px);
+      border-radius: 50%;
+      animation: aurora-rot 10s linear infinite;
+    }
+
+    @keyframes aurora-rot {
+      from {
+        transform: translate(-50%, -55%) rotate(0deg)
+      }
+
+      to {
+        transform: translate(-50%, -55%) rotate(360deg)
+      }
+    }
+
+    .aurora-2 {
+      position: absolute;
+      pointer-events: none;
+      width: 600px;
+      height: 600px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(124, 58, 237, .2) 0%, transparent 65%);
+      filter: blur(40px);
+      border-radius: 50%;
+      animation: aurora-pulse 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes aurora-pulse {
+      from {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: .6
+      }
+
+      to {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1
+      }
+    }
+
+    /* Hero content */
+    .hero-inner {
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .35rem 1rem;
+      margin-bottom: 2.5rem;
+      background: rgba(147, 51, 234, .1);
+      border: 1px solid rgba(147, 51, 234, .3);
+      border-radius: 100px;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: #a78bfa;
+    }
+
+    .hero-pill-dot {
+      width: 6px;
+      height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: dot-blink 2s ease-in-out infinite
+    }
+
+    @keyframes dot-blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .hero-h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3.5rem, 8vw, 6.5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -.04em;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-h1 .line2 {
+      display: block;
+      background: linear-gradient(135deg, #c084fc 0%, #818cf8 35%, #22d3ee 75%, #4ade80 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: grad-shift 6s ease infinite alternate;
+      background-size: 200% auto;
+    }
+
+    @keyframes grad-shift {
+      from {
+        background-position: 0% center
+      }
+
+      to {
+        background-position: 100% center
+      }
+    }
+
+    .hero-sub {
+      font-size: 1.2rem;
+      color: #71717a;
+      line-height: 1.7;
+      max-width: 44ch;
+      margin: 0 auto 3rem;
+      font-weight: 400;
+    }
+
+    .hero-sub strong {
+      color: #a1a1aa;
+      font-weight: 500
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .875rem;
+      flex-wrap: wrap
+    }
+
+    /* Command box */
+    .cmdbox {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .8rem 1rem .8rem 1.4rem;
+      background: #0a0a0a;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      transition: border-color .2s;
+    }
+
+    .cmdbox:hover {
+      border-color: rgba(147, 51, 234, .4)
+    }
+
+    .cmdbox code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .95rem;
+      color: #4ade80;
+      letter-spacing: .02em
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      color: #52525b;
+      transition: color .15s, background .15s;
+    }
+
+    .copy-btn:hover {
+      color: #9333ea;
+      background: rgba(147, 51, 234, .1)
+    }
+
+    .copy-btn:focus-visible {
+      outline: 2px solid #9333ea;
+      outline-offset: 2px
+    }
+
+    /* Buttons */
+    .btn-p {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .8rem 1.75rem;
+      background: #9333ea;
+      color: #fff;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 12px;
+      min-height: 48px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s cubic-bezier(.16, 1, .3, 1), box-shadow .2s;
+    }
+
+    .btn-p::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .15), transparent);
+      opacity: 0;
+      transition: opacity .2s
+    }
+
+    .btn-p:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(147, 51, 234, .5)
+    }
+
+    .btn-p:hover::before {
+      opacity: 1
+    }
+
+    .btn-p:focus-visible {
+      outline: 2px solid #c084fc;
+      outline-offset: 3px
+    }
+
+    .btn-p:active {
+      transform: translateY(0)
+    }
+
+    .btn-g {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .8rem 1.5rem;
+      min-height: 48px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: #d4d4d8;
+      font-weight: 500;
+      font-size: .95rem;
+      border-radius: 12px;
+      transition: background .2s, border-color .2s, transform .2s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .btn-g:hover {
+      background: rgba(255, 255, 255, .09);
+      border-color: rgba(255, 255, 255, .18);
+      transform: translateY(-2px)
+    }
+
+    .btn-g:focus-visible {
+      outline: 2px solid #9333ea;
+      outline-offset: 3px
+    }
+
+    /* ─────────────── STATS ─────────────── */
+    .stats {
+      padding: 2.5rem 0;
+      border-top: 1px solid rgba(255, 255, 255, .05);
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      padding: 1.25rem 2rem;
+      position: relative
+    }
+
+    .stat+.stat::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 25%;
+      bottom: 25%;
+      width: 1px;
+      background: rgba(255, 255, 255, .06)
+    }
+
+    .sval {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #c084fc, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .slabel {
+      font-size: .76rem;
+      color: #52525b;
+      font-weight: 500;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-top: .35rem
+    }
+
+    /* ─────────────── SECTION HEADER ─────────────── */
+    .sec-label {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: #9333ea;
+      padding: .28rem .75rem;
+      background: rgba(147, 51, 234, .08);
+      border: 1px solid rgba(147, 51, 234, .15);
+      border-radius: 100px;
+      margin-bottom: 1.25rem;
+    }
+
+    .sec-h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.05;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      margin-bottom: .875rem;
+    }
+
+    .sec-sub {
+      font-size: 1rem;
+      color: #71717a;
+      line-height: 1.75;
+      max-width: 54ch
+    }
+
+    .sec-hdr {
+      margin-bottom: 4rem
+    }
+
+    .center {
+      text-align: center
+    }
+
+    .center .sec-sub {
+      margin: 0 auto
+    }
+
+    /* ─────────────── FEATURES — GRADIENT BORDER CARDS ─────────────── */
+    .features {
+      padding: 8rem 0
+    }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 24px;
+      overflow: hidden
+    }
+
+    .feat-card {
+      background: #000;
+      padding: 2.25rem;
+      position: relative;
+      transition: background .25s;
+      cursor: default;
+    }
+
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .35s;
+      pointer-events: none;
+      background: radial-gradient(ellipse 60% 60% at var(--mx, 50%) var(--my, 50%), rgba(147, 51, 234, .1), transparent);
+    }
+
+    .feat-card:hover {
+      background: #080808
+    }
+
+    .feat-card:hover::before {
+      opacity: 1
+    }
+
+    .fi {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .fi-p {
+      background: rgba(147, 51, 234, .12);
+      color: #a855f7
+    }
+
+    .fi-c {
+      background: rgba(6, 182, 212, .12);
+      color: #22d3ee
+    }
+
+    .fi-g {
+      background: rgba(74, 222, 128, .12);
+      color: #4ade80
+    }
+
+    .fi-a {
+      background: rgba(251, 191, 36, .12);
+      color: #fbbf24
+    }
+
+    .fi-r {
+      background: rgba(248, 113, 113, .12);
+      color: #f87171
+    }
+
+    .fi-o {
+      background: rgba(251, 146, 60, .12);
+      color: #fb923c
+    }
+
+    .feat-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      letter-spacing: -.01em
+    }
+
+    .feat-card p {
+      font-size: .875rem;
+      color: #71717a;
+      line-height: 1.7
+    }
+
+    /* ─────────────── 8 DIMENSIONS ─────────────── */
+    .dims {
+      padding: 8rem 0;
+      background: #050505;
+      border-top: 1px solid rgba(255, 255, 255, .05);
+      border-bottom: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .dims-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start
+    }
+
+    .dims-left {
+      position: sticky;
+      top: 7rem
+    }
+
+    .dims-left .sec-sub {
+      margin-bottom: 2.5rem
+    }
+
+    .dims-right {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem
+    }
+
+    .dim-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255, 255, 255, .02);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 14px;
+      transition: border-color .2s, background .2s, transform .2s cubic-bezier(.16, 1, .3, 1);
+      cursor: default;
+    }
+
+    .dim-row:hover {
+      background: rgba(147, 51, 234, .05);
+      border-color: rgba(147, 51, 234, .25);
+      transform: translateX(6px)
+    }
+
+    .dim-n {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      font-weight: 600;
+      color: #9333ea;
+      background: rgba(147, 51, 234, .1);
+      padding: .2rem .5rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: .15rem;
+    }
+
+    .dim-row h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .25rem
+    }
+
+    .dim-row p {
+      font-size: .83rem;
+      color: #71717a;
+      line-height: 1.6
+    }
+
+    /* ─────────────── EXPERT MARQUEE ─────────────── */
+    .experts {
+      padding: 8rem 0;
+      overflow: hidden
+    }
+
+    .experts .sec-hdr {
+      text-align: center;
+      margin-bottom: 3rem
+    }
+
+    .mwrap {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem
+    }
+
+    .mtrack {
+      display: flex;
+      gap: .75rem;
+      width: max-content;
+      animation: march-l 26s linear infinite
+    }
+
+    .mtrack.rv {
+      animation: march-r 26s linear infinite
+    }
+
+    .mwrap:hover .mtrack {
+      animation-play-state: paused
+    }
+
+    @keyframes march-l {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    @keyframes march-r {
+      from {
+        transform: translateX(-50%)
+      }
+
+      to {
+        transform: translateX(0)
+      }
+    }
+
+    .epill {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .55rem 1.1rem;
+      white-space: nowrap;
+      background: #0a0a0a;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 100px;
+      font-size: .84rem;
+      font-weight: 500;
+      color: #71717a;
+      cursor: default;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+
+    .epill svg {
+      flex-shrink: 0;
+      color: #9333ea
+    }
+
+    .epill:hover {
+      border-color: rgba(147, 51, 234, .35);
+      color: #fafafa;
+      background: rgba(147, 51, 234, .07)
+    }
+
+    /* ─────────────── HOW IT WORKS ─────────────── */
+    .how {
+      padding: 8rem 0;
+      background: #050505;
+      border-top: 1px solid rgba(255, 255, 255, .05);
+      border-bottom: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .how-steps {
+      max-width: 700px;
+      margin: 4rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .howstep {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 2rem;
+      padding: 2.25rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      position: relative;
+    }
+
+    .howstep:last-child {
+      border-bottom: none
+    }
+
+    .hsnum {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      background: rgba(147, 51, 234, .08);
+      border: 1px solid rgba(147, 51, 234, .2);
+      color: #9333ea;
+    }
+
+    .hstext h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      letter-spacing: -.01em
+    }
+
+    .hstext p {
+      font-size: .875rem;
+      color: #71717a;
+      line-height: 1.7;
+      margin-bottom: 1rem
+    }
+
+    .hscmd {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .4rem .9rem;
+      background: #0a0a0a;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 8px;
+    }
+
+    .hscmd code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      color: #4ade80
+    }
+
+    /* ─────────────── VERSION ─────────────── */
+    .versions {
+      padding: 8rem 0
+    }
+
+    .vtable-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 20px;
+      background: #050505;
+      margin-top: 3.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .875rem
+    }
+
+    th,
+    td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #52525b;
+      background: rgba(5, 5, 5, .6)
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tbody tr {
+      transition: background .15s
+    }
+
+    tbody tr:hover td {
+      background: rgba(147, 51, 234, .03)
+    }
+
+    .vbadge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .22rem .65rem;
+      background: rgba(147, 51, 234, .1);
+      border: 1px solid rgba(147, 51, 234, .2);
+      border-radius: 100px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .76rem;
+      font-weight: 700;
+      color: #a855f7;
+      white-space: nowrap;
+    }
+
+    .vbadge.new {
+      background: rgba(74, 222, 128, .1);
+      border-color: rgba(74, 222, 128, .25);
+      color: #4ade80;
+      white-space: nowrap
+    }
+
+    .vdate {
+      color: #52525b;
+      font-size: .825rem;
+      white-space: nowrap
+    }
+
+    /* ─────────────── FAQ ─────────────── */
+    .faq {
+      padding: 8rem 0;
+      background: #050505;
+      border-top: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .faqlist {
+      max-width: 760px;
+      margin: 3.5rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: .625rem
+    }
+
+    .faqitem {
+      background: #0a0a0a;
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .faqitem:hover {
+      border-color: rgba(147, 51, 234, .2)
+    }
+
+    .faqbtn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.75rem;
+      color: #fafafa;
+      text-align: left;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .975rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      min-height: 44px;
+      transition: color .2s;
+    }
+
+    .faqbtn:hover {
+      color: #c084fc
+    }
+
+    .faqbtn:focus-visible {
+      outline: 2px solid #9333ea;
+      outline-offset: 2px
+    }
+
+    .faqbtn .icon {
+      flex-shrink: 0;
+      color: #52525b;
+      transition: transform .35s cubic-bezier(.16, 1, .3, 1), color .2s
+    }
+
+    .faqitem.open .faqbtn .icon {
+      transform: rotate(45deg);
+      color: #9333ea
+    }
+
+    .faqbody {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s cubic-bezier(.16, 1, .3, 1)
+    }
+
+    .faqitem.open .faqbody {
+      max-height: 400px
+    }
+
+    .faqbody p {
+      padding: 0 1.75rem 1.5rem;
+      font-size: .875rem;
+      color: #71717a;
+      line-height: 1.8
+    }
+
+    /* ─────────────── CTA ─────────────── */
+    .cta {
+      padding: 10rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse 70% 70% at 50% 100%, rgba(88, 28, 135, .25) 0%, transparent 60%), #000;
+    }
+
+    .cta-ring {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      border: 1px solid rgba(147, 51, 234, .08);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: cta-pulse 3.5s ease-in-out infinite;
+    }
+
+    .cr1 {
+      width: 400px;
+      height: 400px
+    }
+
+    .cr2 {
+      width: 650px;
+      height: 650px;
+      animation-delay: .6s;
+      opacity: .6
+    }
+
+    .cr3 {
+      width: 900px;
+      height: 900px;
+      animation-delay: 1.2s;
+      opacity: .3
+    }
+
+    @keyframes cta-pulse {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: .4
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.04);
+        opacity: .8
+      }
+    }
+
+    .cta .w {
+      position: relative;
+      z-index: 1
+    }
+
+    .cta-h {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+      margin-bottom: 1.25rem;
+    }
+
+    .cta-sub {
+      font-size: 1.1rem;
+      color: #71717a;
+      margin-bottom: 3rem
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .875rem;
+      flex-wrap: wrap
+    }
+
+    /* ─────────────── FOOTER ─────────────── */
+    footer {
+      padding: 4rem 0 2.5rem;
+      border-top: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .footgrid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 5rem;
+      margin-bottom: 3.5rem
+    }
+
+    .footbrand .navlogo {
+      margin-bottom: 1rem
+    }
+
+    .footbrand p {
+      font-size: .875rem;
+      color: #52525b;
+      line-height: 1.7;
+      max-width: 38ch
+    }
+
+    .footlinks h4 {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #52525b;
+      margin-bottom: 1.25rem
+    }
+
+    .footlinks ul {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem
+    }
+
+    .footlinks a {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      font-size: .875rem;
+      color: #71717a;
+      min-height: 40px;
+      transition: color .15s;
+    }
+
+    .footlinks a:hover {
+      color: #9333ea
+    }
+
+    .footlinks a:focus-visible {
+      outline: 2px solid #9333ea;
+      outline-offset: 2px;
+      border-radius: 4px
+    }
+
+    .footbottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, .05);
+      font-size: .8rem;
+      color: #3f3f46;
+    }
+
+    .footbottom a {
+      color: #52525b;
+      transition: color .15s
+    }
+
+    .footbottom a:hover {
+      color: #9333ea
+    }
+
+    /* ─────────────── TOAST ─────────────── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .8rem 1.35rem;
+      background: rgba(10, 10, 10, .95);
+      border: 1px solid rgba(74, 222, 128, .3);
+      border-radius: 12px;
+      font-size: .875rem;
+      font-weight: 600;
+      color: #4ade80;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 0 1px rgba(74, 222, 128, .1), 0 16px 40px rgba(0, 0, 0, .6);
+      transform: translateY(100px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .4s cubic-bezier(.16, 1, .3, 1), opacity .4s;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    /* ─────────────── REVEAL ─────────────── */
+    .rv {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .65s ease, transform .65s ease
+    }
+
+    .rv.in {
+      opacity: 1;
+      transform: none
+    }
+
+    .d1 {
+      transition-delay: .08s
+    }
+
+    .d2 {
+      transition-delay: .16s
+    }
+
+    .d3 {
+      transition-delay: .24s
+    }
+
+    .d4 {
+      transition-delay: .32s
+    }
+
+    /* ─────────────── RESPONSIVE ─────────────── */
+    @media(max-width:900px) {
+      .feat-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .dims-wrap {
+        grid-template-columns: 1fr;
+        gap: 3rem
+      }
+
+      .dims-left {
+        position: static
+      }
+
+      .footgrid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem
+      }
+    }
+
+    @media(max-width:640px) {
+      .navmenu {
+        display: none
+      }
+
+      .navmenu.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: calc(100% + .75rem);
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, .95);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 20px;
+        padding: .5rem;
+      }
+
+      .navmenu.open a {
+        height: 48px;
+        border-radius: 12px
+      }
+
+      .hamburger {
+        display: flex
+      }
+
+      .feat-grid {
+        grid-template-columns: 1fr;
+        border-radius: 20px
+      }
+
+      .howstep {
+        grid-template-columns: 1fr;
+        gap: 1rem
+      }
+
+      .hero-h1 {
+        font-size: 3rem
+      }
+
+      .stat+.stat::before {
+        display: none
+      }
+
+      .stat {
+        padding: 1.25rem
+      }
+
+      .footbottom {
+        flex-direction: column;
+        text-align: center
+      }
+    }
+
+    @media(max-width:480px) {
+      .feat-grid {
+        border-radius: 16px
+      }
+
+      .hero-sub {
+        font-size: 1rem
+      }
+    }
   </style>
 </head>
+
 <body>
 
-<div class="grid-bg" aria-hidden="true"></div>
+  <div class="grid-bg" aria-hidden="true"></div>
 
-<!-- ===== NAV ===== -->
-<nav class="nav" aria-label="Main navigation">
-  <a href="#" class="navlogo" aria-label="Gatebreaker home">
-    <div class="navlogo-icon" aria-hidden="true">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    </div>
-    GATEBREAKER
-  </a>
-
-  <ul class="navmenu" id="nm">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#framework">Framework</a></li>
-    <li><a href="#experts">Experts</a></li>
-    <li><a href="#faq">FAQ</a></li>
-    <li>
-      <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="nav-github" aria-label="GitHub (new tab)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-        GitHub
-      </a>
-    </li>
-  </ul>
-
-  <button class="hamburger" id="hb" aria-label="Toggle menu" aria-expanded="false" aria-controls="nm">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-  </button>
-</nav>
-
-<!-- ===== HERO ===== -->
-<section class="hero" aria-labelledby="h1">
-  <div class="aurora" aria-hidden="true"></div>
-  <div class="aurora-2" aria-hidden="true"></div>
-
-  <div class="hero-inner">
-    <div class="hero-pill rv" role="status">
-      <span class="hero-pill-dot" aria-hidden="true"></span>
-      v1.1.0 — Now on npm
-    </div>
-
-    <h1 class="hero-h1 rv d1" id="h1">
-      Stop collecting certs.<br>
-      <span class="line2">Break in for real.</span>
-    </h1>
-
-    <p class="hero-sub rv d2">
-      Gatebreaker gives you a <strong>brutally honest, 8-dimension gap analysis</strong> of your cybersecurity career — and a concrete plan to actually fix it.
-    </p>
-
-    <div class="hero-actions rv d3">
-      <div class="cmdbox" role="group" aria-label="Install command">
-        <code>npx gatebreaker</code>
-        <button class="copy-btn" onclick="copyCmd()" aria-label="Copy command">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
+  <!-- ===== NAV ===== -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="#" class="navlogo" aria-label="Gatebreaker home">
+      <div class="navlogo-icon" aria-hidden="true">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
       </div>
-      <a href="#features" class="btn-p">
-        Explore Features
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-      </a>
-      <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn-g">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-        View Source
-      </a>
-    </div>
-  </div>
-</section>
+      GATEBREAKER
+    </a>
 
-<!-- ===== STATS ===== -->
-<div class="stats" aria-label="Statistics">
-  <div class="w">
-    <div class="stats-row">
-      <div class="stat rv"><div class="sval">40+</div><div class="slabel">Expert Personas</div></div>
-      <div class="stat rv d1"><div class="sval">8</div><div class="slabel">Gap Dimensions</div></div>
-      <div class="stat rv d2"><div class="sval">12</div><div class="slabel">LLM Providers</div></div>
-      <div class="stat rv d3"><div class="sval">3</div><div class="slabel">Career Tracks</div></div>
-      <div class="stat rv d4"><div class="sval">MIT</div><div class="slabel">Open Source</div></div>
-    </div>
-  </div>
-</div>
+    <ul class="navmenu" id="nm">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#framework">Framework</a></li>
+      <li><a href="#experts">Experts</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li>
+        <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="nav-github"
+          aria-label="GitHub (new tab)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          GitHub
+        </a>
+      </li>
+    </ul>
 
-<!-- ===== FEATURES ===== -->
-<section id="features" class="features">
-  <div class="w">
-    <div class="sec-hdr center rv">
-      <div class="sec-label">Why Gatebreaker</div>
-      <h2 class="sec-h2">Not another career guide.</h2>
-      <p class="sec-sub">Every feature is engineered to surface what generic advice hides and give you a real, actionable edge.</p>
-    </div>
+    <button class="hamburger" id="hb" aria-label="Toggle menu" aria-expanded="false" aria-controls="nm">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+  </nav>
 
-    <div class="feat-grid" role="list">
-      <div class="feat-card rv" role="listitem">
-        <div class="fi fi-p" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  <!-- ===== HERO ===== -->
+  <section class="hero" aria-labelledby="h1">
+    <div class="aurora" aria-hidden="true"></div>
+    <div class="aurora-2" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <div class="hero-pill rv" role="status">
+        <span class="hero-pill-dot" aria-hidden="true"></span>
+        v1.1.0 — Now on npm
+      </div>
+
+      <h1 class="hero-h1 rv d1" id="h1">
+        Stop collecting certs.<br>
+        <span class="line2">Break in for real.</span>
+      </h1>
+
+      <p class="hero-sub rv d2">
+        Gatebreaker gives you a <strong>brutally honest, 8-dimension gap analysis</strong> of your cybersecurity career
+        — and a concrete plan to actually fix it.
+      </p>
+
+      <div class="hero-actions rv d3">
+        <div class="cmdbox" role="group" aria-label="Install command">
+          <code>npx gatebreaker</code>
+          <button class="copy-btn" onclick="copyCmd()" aria-label="Copy command">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          </button>
         </div>
-        <h3>Radical Honesty Engine</h3>
-        <p>No motivational fluff. Gatebreaker runs an incident-investigation style interrogation of your profile and delivers a verdict.</p>
-      </div>
-
-      <div class="feat-card rv d1" role="listitem">
-        <div class="fi fi-c" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        </div>
-        <h3>8-Dimension Gap Analysis</h3>
-        <p>Scores you across Knowledge, Skills, Tools, Certifications, Portfolio, Network, Mindset, and Communication gaps.</p>
-      </div>
-
-      <div class="feat-card rv d2" role="listitem">
-        <div class="fi fi-g" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-        </div>
-        <h3>Visual Career Roadmaps</h3>
-        <p>Interactive HTML roadmaps with 90-day lab checklists. Offline-first, saved in localStorage, zero data sent.</p>
-      </div>
-
-      <div class="feat-card rv" role="listitem">
-        <div class="fi fi-a" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-        </div>
-        <h3>40+ Expert Personas</h3>
-        <p>Channel Bruce Schneier, Kevin Mitnick, Sun Tzu, Naomi Buckwalter — and 36 more — for perspective-specific advice.</p>
-      </div>
-
-      <div class="feat-card rv d1" role="listitem">
-        <div class="fi fi-r" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <h3>12 LLM Providers</h3>
-        <p>Gemini, Claude, GPT-4, Groq, Mistral, Cohere, DeepSeek, Krutrim, Sarvam, Zhipu, Qwen, Ollama.</p>
-      </div>
-
-      <div class="feat-card rv d2" role="listitem">
-        <div class="fi fi-o" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <h3>MITRE ATT&amp;CK Integrated</h3>
-        <p>Frameworks baked in — MITRE ATT&amp;CK, OWASP Top 10, NIST SP 800-61, NICE, and the FAIR risk model.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== 8 DIMENSIONS ===== -->
-<section id="framework" class="dims">
-  <div class="w">
-    <div class="dims-wrap">
-      <div class="dims-left rv">
-        <div class="sec-label">The Framework</div>
-        <h2 class="sec-h2">8 Dimensions.<br>Zero Excuses.</h2>
-        <p class="sec-sub">Most hiring failures happen because of 2–3 combined gaps nobody told you about. Gatebreaker finds all of them — and ranks them by priority.</p>
-        <a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener" class="btn-p" style="display:inline-flex;margin-top:2rem">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Install on npm
+        <a href="#features" class="btn-p">
+          Explore Features
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="7" y1="17" x2="17" y2="7" />
+            <polyline points="7 7 17 7 17 17" />
+          </svg>
+        </a>
+        <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn-g">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          View Source
         </a>
       </div>
-
-      <div class="dims-right">
-        <div class="dim-row rv"><span class="dim-n">01</span><div><h4>Knowledge</h4><p>Theoretical concepts, protocols, and architectures required for the role.</p></div></div>
-        <div class="dim-row rv d1"><span class="dim-n">02</span><div><h4>Skills</h4><p>Practical tasks you can execute independently, without documentation.</p></div></div>
-        <div class="dim-row rv d1"><span class="dim-n">03</span><div><h4>Tools</h4><p>Hands-on production experience with SIEMs, EDRs, scanners, and debuggers.</p></div></div>
-        <div class="dim-row rv d2"><span class="dim-n">04</span><div><h4>Certifications</h4><p>Aligning your credential stack with role requirements — not cert collection.</p></div></div>
-        <div class="dim-row rv d2"><span class="dim-n">05</span><div><h4>Portfolio</h4><p>Verifiable proof — GitHub labs, CTF writeups, documented home labs.</p></div></div>
-        <div class="dim-row rv d3"><span class="dim-n">06</span><div><h4>Network</h4><p>Community presence, referral access, and industry signal visibility.</p></div></div>
-        <div class="dim-row rv d3"><span class="dim-n">07</span><div><h4>Mindset</h4><p>Adversarial thinking, proactive learning vs. reactive cert collection.</p></div></div>
-        <div class="dim-row rv d4"><span class="dim-n">08</span><div><h4>Communication</h4><p>Translating technical risk into business impact language executives understand.</p></div></div>
-      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ===== EXPERTS ===== -->
-<section id="experts" class="experts">
-  <div class="w">
-    <div class="sec-hdr center rv">
-      <div class="sec-label">Expert Pantheon</div>
-      <h2 class="sec-h2">Channel the Legends.</h2>
-      <p class="sec-sub">40+ cybersecurity icons distilled into distinct advisory personas. Each one gives career guidance rooted in their documented philosophy.</p>
-    </div>
-  </div>
-
-  <div class="mwrap" aria-label="Expert personas carousel" role="region">
-    <div class="mtrack" aria-hidden="true">
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Sun Tzu</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Bruce Schneier</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Kevin Mitnick</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Dmitri Alperovitch</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Alan Turing</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Dr. Eric Cole</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Katie Nickels</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Naomi Buckwalter</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Lenny Zeltser</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Graham Cluley</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Marcus Hutchins</div>
-      <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Daniel Miessler</div>
-      <!-- duplicates for seamless loop -->
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Sun Tzu</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Bruce Schneier</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Kevin Mitnick</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Dmitri Alperovitch</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Alan Turing</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Dr. Eric Cole</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Katie Nickels</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Naomi Buckwalter</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Lenny Zeltser</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Graham Cluley</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Marcus Hutchins</div>
-      <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Daniel Miessler</div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== HOW IT WORKS ===== -->
-<section id="how-it-works" class="how">
-  <div class="w">
-    <div class="sec-hdr center rv">
-      <div class="sec-label">How It Works</div>
-      <h2 class="sec-h2">Three commands. Total clarity.</h2>
-      <p class="sec-sub">No account. No signup. No SaaS subscription. Just run it.</p>
-    </div>
-    <div class="how-steps">
-      <div class="howstep rv">
-        <div class="hsnum" aria-hidden="true">01</div>
-        <div class="hstext">
-          <h3>Run the Diagnostic</h3>
-          <p>Answer the intake questions. Gatebreaker detects your archetype, scans all 8 dimensions, and delivers a prioritized remediation plan in minutes.</p>
-          <div class="hscmd"><code>npx gatebreaker</code></div>
+  <!-- ===== STATS ===== -->
+  <div class="stats" aria-label="Statistics">
+    <div class="w">
+      <div class="stats-row">
+        <div class="stat rv">
+          <div class="sval">40+</div>
+          <div class="slabel">Expert Personas</div>
         </div>
-      </div>
-      <div class="howstep rv d1">
-        <div class="hsnum" aria-hidden="true">02</div>
-        <div class="hstext">
-          <h3>Get Expert Perspectives</h3>
-          <p>See how Sun Tzu, Bruce Schneier, Kevin Mitnick, and Naomi Buckwalter each read your profile through their unique philosophy and methodology.</p>
-          <div class="hscmd"><code>npx gatebreaker compare</code></div>
+        <div class="stat rv d1">
+          <div class="sval">8</div>
+          <div class="slabel">Gap Dimensions</div>
         </div>
-      </div>
-      <div class="howstep rv d2">
-        <div class="hsnum" aria-hidden="true">03</div>
-        <div class="hstext">
-          <h3>Generate Your Roadmap</h3>
-          <p>Get an interactive HTML roadmap with a 90-day lab checklist for Offensive, Defensive, or GRC tracks. Saved locally — no cloud needed.</p>
-          <div class="hscmd"><code>npx gatebreaker roadmap</code></div>
+        <div class="stat rv d2">
+          <div class="sval">12</div>
+          <div class="slabel">LLM Providers</div>
+        </div>
+        <div class="stat rv d3">
+          <div class="sval">3</div>
+          <div class="slabel">Career Tracks</div>
+        </div>
+        <div class="stat rv d4">
+          <div class="sval">MIT</div>
+          <div class="slabel">Open Source</div>
         </div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ===== VERSIONS ===== -->
-<section id="version" class="versions">
-  <div class="w">
-    <div class="rv">
-      <div class="sec-label">Changelog</div>
-      <h2 class="sec-h2">Version History</h2>
-      <p class="sec-sub">From a system prompt to a full career diagnostic engine.</p>
-    </div>
-    <div class="vtable-wrap rv">
-      <table>
-        <thead><tr><th scope="col">Version</th><th scope="col">Released</th><th scope="col">What Changed</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="vbadge new">v1.1.0&nbsp;✓</span></td>
-            <td class="vdate">May 31, 2026</td>
-            <td>God-tier landing page redesign — aurora hero, gradient feature grid, accordion FAQ, scroll-reveal animations, full a11y.</td>
-          </tr>
-          <tr>
-            <td><span class="vbadge">v1.0.9</span></td>
-            <td class="vdate">May 31, 2026</td>
-            <td>Rebranded to Gatebreaker. Expert comparison dashboard, localStorage roadmaps, repo migrated to cyberhavox/gatebreaker.</td>
-          </tr>
-          <tr>
-            <td><span class="vbadge">v1.0.8</span></td>
-            <td class="vdate">May 2026</td>
-            <td>OIDC Trusted Publishing, automated CI/CD release workflow, dev dependency cleanup.</td>
-          </tr>
-          <tr>
-            <td><span class="vbadge">v1.0.7</span></td>
-            <td class="vdate">May 2026</td>
-            <td>Support for 12 LLM providers — Gemini, Claude, GPT-4, Groq, Mistral, Cohere, DeepSeek, Krutrim, Sarvam, Zhipu, Qwen, Ollama.</td>
-          </tr>
-          <tr>
-            <td><span class="vbadge">v1.0.5</span></td>
-            <td class="vdate">May 2026</td>
-            <td>Interactive HTML/SVG visual career roadmap generator with lab checklists.</td>
-          </tr>
-          <tr>
-            <td><span class="vbadge">v1.0.0</span></td>
-            <td class="vdate">May 2026</td>
-            <td>Initial public release — 8-Dimension intake system prompt and agentic skill.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
+  <!-- ===== FEATURES ===== -->
+  <section id="features" class="features">
+    <div class="w">
+      <div class="sec-hdr center rv">
+        <div class="sec-label">Why Gatebreaker</div>
+        <h2 class="sec-h2">Not another career guide.</h2>
+        <p class="sec-sub">Every feature is engineered to surface what generic advice hides and give you a real,
+          actionable edge.</p>
+      </div>
 
-<!-- ===== FAQ ===== -->
-<section id="faq" class="faq">
-  <div class="w">
-    <div class="sec-hdr center rv">
-      <div class="sec-label">FAQ</div>
-      <h2 class="sec-h2">Common Questions.</h2>
-    </div>
-    <div class="faqlist">
-      <div class="faqitem rv">
-        <button class="faqbtn" aria-expanded="false">
-          What is the core mission of Gatebreaker?
-          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faqbody"><p>Gatebreaker solves the entry-level catch-22 in cybersecurity. Instead of generic advice, it uses an incident-investigation methodology to identify exact blockers, build verifiable portfolios, and help candidates bypass automated HR filters by targeting technical hiring managers directly.</p></div>
-      </div>
-      <div class="faqitem rv d1">
-        <button class="faqbtn" aria-expanded="false">
-          How does the 8-Dimension Gap Analysis work?
-          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faqbody"><p>Instead of just reviewing certifications, Gatebreaker evaluates your profile across 8 dimensions — each scored 0–5 against your target role's minimum entry requirements — then generates a prioritized remediation plan showing which gaps to close first for the maximum hiring impact.</p></div>
-      </div>
-      <div class="faqitem rv d2">
-        <button class="faqbtn" aria-expanded="false">
-          What is the "Cert Collector" archetype?
-          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faqbody"><p>A career trap where professionals accumulate 4+ certifications (Security+, CEH, CySA+) while having zero practical labs or portfolio evidence. Gatebreaker prescribes halting exam prep entirely and building documented home labs — Wazuh SIEM, Active Directory, CTF writeups — instead.</p></div>
-      </div>
-      <div class="faqitem rv d3">
-        <button class="faqbtn" aria-expanded="false">
-          Do I need an API key to run Gatebreaker?
-          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faqbody"><p>No. Gatebreaker includes a built-in mock mode that works completely offline without an API key. For live AI-powered responses, configure any of the 12 supported LLM providers (Gemini, Claude, GPT-4, Groq, etc.) by setting the appropriate environment variable before running.</p></div>
-      </div>
-      <div class="faqitem rv d4">
-        <button class="faqbtn" aria-expanded="false">
-          Which industry frameworks are integrated?
-          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="faqbody"><p>Gatebreaker integrates MITRE ATT&amp;CK for detection mapping, OWASP Top 10 for application security, NIST SP 800-61 for incident response, the FAIR framework for risk quantification, and NIST NICE (SP 800-181) for cybersecurity role taxonomy and workforce skill mapping.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== CTA ===== -->
-<section class="cta" aria-labelledby="cta-h">
-  <div class="cta-ring cr1" aria-hidden="true"></div>
-  <div class="cta-ring cr2" aria-hidden="true"></div>
-  <div class="cta-ring cr3" aria-hidden="true"></div>
-  <div class="w">
-    <h2 class="cta-h rv" id="cta-h">
-      Ready for a <span style="background:linear-gradient(135deg,#c084fc,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">brutally honest</span><br>reality check?
-    </h2>
-    <p class="cta-sub rv d1">Run the diagnostic. Find your gaps. Break the gates.</p>
-    <div class="cta-actions rv d2">
-      <div class="cmdbox">
-        <code>npx gatebreaker</code>
-        <button class="copy-btn" onclick="copyCmd()" aria-label="Copy command">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
-      </div>
-      <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn-g">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Star on GitHub
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ===== FOOTER ===== -->
-<footer>
-  <div class="w">
-    <div class="footgrid">
-      <div class="footbrand">
-        <div class="navlogo" style="margin-bottom:.9rem">
-          <div class="navlogo-icon" aria-hidden="true">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="feat-grid" role="list">
+        <div class="feat-card rv" role="listitem">
+          <div class="fi fi-p" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
           </div>
-          GATEBREAKER
+          <h3>Radical Honesty Engine</h3>
+          <p>No motivational fluff. Gatebreaker runs an incident-investigation style interrogation of your profile and
+            delivers a verdict.</p>
         </div>
-        <p>Designed for the next generation of security professionals. Open-source under the MIT License.</p>
+
+        <div class="feat-card rv d1" role="listitem">
+          <div class="fi fi-c" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+          </div>
+          <h3>8-Dimension Gap Analysis</h3>
+          <p>Scores you across Knowledge, Skills, Tools, Certifications, Portfolio, Network, Mindset, and Communication
+            gaps.</p>
+        </div>
+
+        <div class="feat-card rv d2" role="listitem">
+          <div class="fi fi-g" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="3 11 22 2 13 21 11 13 3 11" />
+            </svg>
+          </div>
+          <h3>Visual Career Roadmaps</h3>
+          <p>Interactive HTML roadmaps with 90-day lab checklists. Offline-first, saved in localStorage, zero data sent.
+          </p>
+        </div>
+
+        <div class="feat-card rv" role="listitem">
+          <div class="fi fi-a" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="7" />
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+            </svg>
+          </div>
+          <h3>40+ Expert Personas</h3>
+          <p>Channel Bruce Schneier, Kevin Mitnick, Sun Tzu, Naomi Buckwalter — and 36 more — for perspective-specific
+            advice.</p>
+        </div>
+
+        <div class="feat-card rv d1" role="listitem">
+          <div class="fi fi-r" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </div>
+          <h3>12 LLM Providers</h3>
+          <p>Gemini, Claude, GPT-4, Groq, Mistral, Cohere, DeepSeek, Krutrim, Sarvam, Zhipu, Qwen, Ollama.</p>
+        </div>
+
+        <div class="feat-card rv d2" role="listitem">
+          <div class="fi fi-o" aria-hidden="true">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+          </div>
+          <h3>MITRE ATT&amp;CK Integrated</h3>
+          <p>Frameworks baked in — MITRE ATT&amp;CK, OWASP Top 10, NIST SP 800-61, NICE, and the FAIR risk model.</p>
+        </div>
       </div>
-      <nav class="footlinks" aria-label="Footer navigation">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" aria-label="GitHub (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>GitHub Repository</a></li>
-          <li><a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener" aria-label="NPM package (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 0v24h24V0zm19.2 19.2H4.8V4.8h14.4z"/></svg>NPM Package</a></li>
-          <li><a href="https://linkedin.com/in/cyberhavox" target="_blank" rel="noopener" aria-label="LinkedIn (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>@cyberhavox</a></li>
-          <li><a href="https://github.com/cyberfascinate" target="_blank" rel="noopener" aria-label="@cyberfascinate on GitHub (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>@cyberfascinate</a></li>
-        </ul>
-      </nav>
     </div>
-    <div class="footbottom">
-      <span>&copy; 2026 Gatebreaker — MIT License</span>
-      <span>Built by <a href="https://github.com/cyberhavox" target="_blank" rel="noopener">@cyberhavox</a> &amp; <a href="https://github.com/cyberfascinate" target="_blank" rel="noopener">@cyberfascinate</a></span>
+  </section>
+
+  <!-- ===== 8 DIMENSIONS ===== -->
+  <section id="framework" class="dims">
+    <div class="w">
+      <div class="dims-wrap">
+        <div class="dims-left rv">
+          <div class="sec-label">The Framework</div>
+          <h2 class="sec-h2">8 Dimensions.<br>Zero Excuses.</h2>
+          <p class="sec-sub">Most hiring failures happen because of 2–3 combined gaps nobody told you about. Gatebreaker
+            finds all of them — and ranks them by priority.</p>
+          <a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener" class="btn-p"
+            style="display:inline-flex;margin-top:2rem">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Install on npm
+          </a>
+        </div>
+
+        <div class="dims-right">
+          <div class="dim-row rv"><span class="dim-n">01</span>
+            <div>
+              <h4>Knowledge</h4>
+              <p>Theoretical concepts, protocols, and architectures required for the role.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d1"><span class="dim-n">02</span>
+            <div>
+              <h4>Skills</h4>
+              <p>Practical tasks you can execute independently, without documentation.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d1"><span class="dim-n">03</span>
+            <div>
+              <h4>Tools</h4>
+              <p>Hands-on production experience with SIEMs, EDRs, scanners, and debuggers.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d2"><span class="dim-n">04</span>
+            <div>
+              <h4>Certifications</h4>
+              <p>Aligning your credential stack with role requirements — not cert collection.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d2"><span class="dim-n">05</span>
+            <div>
+              <h4>Portfolio</h4>
+              <p>Verifiable proof — GitHub labs, CTF writeups, documented home labs.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d3"><span class="dim-n">06</span>
+            <div>
+              <h4>Network</h4>
+              <p>Community presence, referral access, and industry signal visibility.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d3"><span class="dim-n">07</span>
+            <div>
+              <h4>Mindset</h4>
+              <p>Adversarial thinking, proactive learning vs. reactive cert collection.</p>
+            </div>
+          </div>
+          <div class="dim-row rv d4"><span class="dim-n">08</span>
+            <div>
+              <h4>Communication</h4>
+              <p>Translating technical risk into business impact language executives understand.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- ===== EXPERTS ===== -->
+  <section id="experts" class="experts">
+    <div class="w">
+      <div class="sec-hdr center rv">
+        <div class="sec-label">Expert Pantheon</div>
+        <h2 class="sec-h2">Channel the Legends.</h2>
+        <p class="sec-sub">40+ cybersecurity icons distilled into distinct advisory personas. Each one gives career
+          guidance rooted in their documented philosophy.</p>
+      </div>
+    </div>
+
+    <div class="mwrap" aria-label="Expert personas carousel" role="region">
+      <div class="mtrack" aria-hidden="true">
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Sun Tzu</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Bruce Schneier</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Kevin Mitnick</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Dmitri Alperovitch</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Alan Turing</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Dr. Eric Cole</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Katie Nickels</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Naomi Buckwalter</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Lenny Zeltser</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Graham Cluley</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Marcus Hutchins</div>
+        <div class="epill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Daniel Miessler</div>
+        <!-- duplicates for seamless loop -->
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Sun Tzu</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Bruce Schneier</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Kevin Mitnick</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Dmitri Alperovitch</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Alan Turing</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Dr. Eric Cole</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Katie Nickels</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Naomi Buckwalter</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Lenny Zeltser</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Graham Cluley</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Marcus Hutchins</div>
+        <div class="epill" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7" />
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+          </svg>Daniel Miessler</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how-it-works" class="how">
+    <div class="w">
+      <div class="sec-hdr center rv">
+        <div class="sec-label">How It Works</div>
+        <h2 class="sec-h2">Three commands. Total clarity.</h2>
+        <p class="sec-sub">No account. No signup. No SaaS subscription. Just run it.</p>
+      </div>
+      <div class="how-steps">
+        <div class="howstep rv">
+          <div class="hsnum" aria-hidden="true">01</div>
+          <div class="hstext">
+            <h3>Run the Diagnostic</h3>
+            <p>Answer the intake questions. Gatebreaker detects your archetype, scans all 8 dimensions, and delivers a
+              prioritized remediation plan in minutes.</p>
+            <div class="hscmd"><code>npx gatebreaker</code></div>
+          </div>
+        </div>
+        <div class="howstep rv d1">
+          <div class="hsnum" aria-hidden="true">02</div>
+          <div class="hstext">
+            <h3>Get Expert Perspectives</h3>
+            <p>See how Sun Tzu, Bruce Schneier, Kevin Mitnick, and Naomi Buckwalter each read your profile through their
+              unique philosophy and methodology.</p>
+            <div class="hscmd"><code>npx gatebreaker compare</code></div>
+          </div>
+        </div>
+        <div class="howstep rv d2">
+          <div class="hsnum" aria-hidden="true">03</div>
+          <div class="hstext">
+            <h3>Generate Your Roadmap</h3>
+            <p>Get an interactive HTML roadmap with a 90-day lab checklist for Offensive, Defensive, or GRC tracks.
+              Saved locally — no cloud needed.</p>
+            <div class="hscmd"><code>npx gatebreaker roadmap</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VERSIONS ===== -->
+  <section id="version" class="versions">
+    <div class="w">
+      <div class="rv">
+        <div class="sec-label">Changelog</div>
+        <h2 class="sec-h2">Version History</h2>
+        <p class="sec-sub">From a system prompt to a full career diagnostic engine.</p>
+      </div>
+      <div class="vtable-wrap rv">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Version</th>
+              <th scope="col">Released</th>
+              <th scope="col">What Changed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="vbadge new">v1.1.0&nbsp;✓</span></td>
+              <td class="vdate">May 31, 2026</td>
+              <td>God-tier landing page redesign — aurora hero, gradient feature grid, accordion FAQ, scroll-reveal
+                animations, full a11y.</td>
+            </tr>
+            <tr>
+              <td><span class="vbadge">v1.0.9</span></td>
+              <td class="vdate">May 31, 2026</td>
+              <td>Rebranded to Gatebreaker. Expert comparison dashboard, localStorage roadmaps, repo migrated to
+                cyberhavox/gatebreaker.</td>
+            </tr>
+            <tr>
+              <td><span class="vbadge">v1.0.8</span></td>
+              <td class="vdate">May 2026</td>
+              <td>OIDC Trusted Publishing, automated CI/CD release workflow, dev dependency cleanup.</td>
+            </tr>
+            <tr>
+              <td><span class="vbadge">v1.0.7</span></td>
+              <td class="vdate">May 2026</td>
+              <td>Support for 12 LLM providers — Gemini, Claude, GPT-4, Groq, Mistral, Cohere, DeepSeek, Krutrim,
+                Sarvam, Zhipu, Qwen, Ollama.</td>
+            </tr>
+            <tr>
+              <td><span class="vbadge">v1.0.5</span></td>
+              <td class="vdate">May 2026</td>
+              <td>Interactive HTML/SVG visual career roadmap generator with lab checklists.</td>
+            </tr>
+            <tr>
+              <td><span class="vbadge">v1.0.0</span></td>
+              <td class="vdate">May 2026</td>
+              <td>Initial public release — 8-Dimension intake system prompt and agentic skill.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq" class="faq">
+    <div class="w">
+      <div class="sec-hdr center rv">
+        <div class="sec-label">FAQ</div>
+        <h2 class="sec-h2">Common Questions.</h2>
+      </div>
+      <div class="faqlist">
+        <div class="faqitem rv">
+          <button class="faqbtn" aria-expanded="false">
+            What is the core mission of Gatebreaker?
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <div class="faqbody">
+            <p>Gatebreaker solves the entry-level catch-22 in cybersecurity. Instead of generic advice, it uses an
+              incident-investigation methodology to identify exact blockers, build verifiable portfolios, and help
+              candidates bypass automated HR filters by targeting technical hiring managers directly.</p>
+          </div>
+        </div>
+        <div class="faqitem rv d1">
+          <button class="faqbtn" aria-expanded="false">
+            How does the 8-Dimension Gap Analysis work?
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <div class="faqbody">
+            <p>Instead of just reviewing certifications, Gatebreaker evaluates your profile across 8 dimensions — each
+              scored 0–5 against your target role's minimum entry requirements — then generates a prioritized
+              remediation plan showing which gaps to close first for the maximum hiring impact.</p>
+          </div>
+        </div>
+        <div class="faqitem rv d2">
+          <button class="faqbtn" aria-expanded="false">
+            What is the "Cert Collector" archetype?
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <div class="faqbody">
+            <p>A career trap where professionals accumulate 4+ certifications (Security+, CEH, CySA+) while having zero
+              practical labs or portfolio evidence. Gatebreaker prescribes halting exam prep entirely and building
+              documented home labs — Wazuh SIEM, Active Directory, CTF writeups — instead.</p>
+          </div>
+        </div>
+        <div class="faqitem rv d3">
+          <button class="faqbtn" aria-expanded="false">
+            Do I need an API key to run Gatebreaker?
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <div class="faqbody">
+            <p>No. Gatebreaker includes a built-in mock mode that works completely offline without an API key. For live
+              AI-powered responses, configure any of the 12 supported LLM providers (Gemini, Claude, GPT-4, Groq, etc.)
+              by setting the appropriate environment variable before running.</p>
+          </div>
+        </div>
+        <div class="faqitem rv d4">
+          <button class="faqbtn" aria-expanded="false">
+            Which industry frameworks are integrated?
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <div class="faqbody">
+            <p>Gatebreaker integrates MITRE ATT&amp;CK for detection mapping, OWASP Top 10 for application security,
+              NIST SP 800-61 for incident response, the FAIR framework for risk quantification, and NIST NICE (SP
+              800-181) for cybersecurity role taxonomy and workforce skill mapping.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta" aria-labelledby="cta-h">
+    <div class="cta-ring cr1" aria-hidden="true"></div>
+    <div class="cta-ring cr2" aria-hidden="true"></div>
+    <div class="cta-ring cr3" aria-hidden="true"></div>
+    <div class="w">
+      <h2 class="cta-h rv" id="cta-h">
+        Ready for a <span
+          style="background:linear-gradient(135deg,#c084fc,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">brutally
+          honest</span><br>reality check?
+      </h2>
+      <p class="cta-sub rv d1">Run the diagnostic. Find your gaps. Break the gates.</p>
+      <div class="cta-actions rv d2">
+        <div class="cmdbox">
+          <code>npx gatebreaker</code>
+          <button class="copy-btn" onclick="copyCmd()" aria-label="Copy command">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+          </button>
+        </div>
+        <a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener" class="btn-g">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          Star on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="w">
+      <div class="footgrid">
+        <div class="footbrand">
+          <div class="navlogo" style="margin-bottom:.9rem">
+            <div class="navlogo-icon" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            GATEBREAKER
+          </div>
+          <p>Designed for the next generation of security professionals. Open-source under the MIT License.</p>
+        </div>
+        <nav class="footlinks" aria-label="Footer navigation">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://github.com/cyberhavox/gatebreaker" target="_blank" rel="noopener"
+                aria-label="GitHub (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                  aria-hidden="true">
+                  <path
+                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>GitHub Repository</a></li>
+            <li><a href="https://www.npmjs.com/package/gatebreaker" target="_blank" rel="noopener"
+                aria-label="NPM package (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                  aria-hidden="true">
+                  <path d="M0 0v24h24V0zm19.2 19.2H4.8V4.8h14.4z" />
+                </svg>NPM Package</a></li>
+            <li><a href="https://linkedin.com/in/cyberhavox" target="_blank" rel="noopener"
+                aria-label="LinkedIn (new tab)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"
+                  aria-hidden="true">
+                  <path
+                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>@cyberhavox</a></li>
+            <li><a href="https://github.com/cyberfascinate" target="_blank" rel="noopener"
+                aria-label="@cyberfascinate on GitHub (new tab)"><svg width="14" height="14" viewBox="0 0 24 24"
+                  fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>@cyberfascinate</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footbottom">
+        <span>&copy; 2026 Gatebreaker — MIT License</span>
+        <span>Built by <a href="https://github.com/cyberhavox" target="_blank" rel="noopener">@cyberhavox</a> &amp; <a
+            href="https://github.com/cyberfascinate" target="_blank" rel="noopener">@cyberfascinate</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    Copied!
   </div>
-</footer>
 
-<!-- Toast -->
-<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-  Copied!
-</div>
+  <script>
+    /* Copy */
+    function copyCmd() {
+      navigator.clipboard.writeText('npx gatebreaker').then(() => {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+      }).catch(() => {
+        const ta = Object.assign(document.createElement('textarea'), { value: 'npx gatebreaker', style: 'position:fixed;opacity:0' });
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      });
+    }
 
-<script>
-/* Copy */
-function copyCmd(){
-  navigator.clipboard.writeText('npx gatebreaker').then(()=>{
-    const t=document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),2500);
-  }).catch(()=>{
-    const ta=Object.assign(document.createElement('textarea'),{value:'npx gatebreaker',style:'position:fixed;opacity:0'});
-    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-  });
-}
-
-/* Hamburger */
-const hb=document.getElementById('hb'),nm=document.getElementById('nm');
-hb.addEventListener('click',()=>{
-  const o=nm.classList.toggle('open');
-  hb.setAttribute('aria-expanded',o);
-});
-nm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
-  nm.classList.remove('open');hb.setAttribute('aria-expanded','false');
-}));
-
-/* FAQ accordion */
-document.querySelectorAll('.faqbtn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const item=btn.closest('.faqitem');
-    const isOpen=item.classList.contains('open');
-    document.querySelectorAll('.faqitem.open').forEach(i=>{
-      i.classList.remove('open');i.querySelector('.faqbtn').setAttribute('aria-expanded','false');
+    /* Hamburger */
+    const hb = document.getElementById('hb'), nm = document.getElementById('nm');
+    hb.addEventListener('click', () => {
+      const o = nm.classList.toggle('open');
+      hb.setAttribute('aria-expanded', o);
     });
-    if(!isOpen){item.classList.add('open');btn.setAttribute('aria-expanded','true');}
-  });
-});
+    nm.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      nm.classList.remove('open'); hb.setAttribute('aria-expanded', 'false');
+    }));
 
-/* Mouse-tracked glow on feature cards */
-document.querySelectorAll('.feat-card').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const r=card.getBoundingClientRect();
-    const x=((e.clientX-r.left)/r.width)*100;
-    const y=((e.clientY-r.top)/r.height)*100;
-    card.style.setProperty('--mx',x+'%');
-    card.style.setProperty('--my',y+'%');
-  });
-});
+    /* FAQ accordion */
+    document.querySelectorAll('.faqbtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faqitem');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faqitem.open').forEach(i => {
+          i.classList.remove('open'); i.querySelector('.faqbtn').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) { item.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+      });
+    });
 
-/* Scroll reveal — respects prefers-reduced-motion */
-if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});
-  },{threshold:.1,rootMargin:'0px 0px -24px 0px'});
-  document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
-}else{
-  document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
-}
-</script>
+    /* Mouse-tracked glow on feature cards */
+    document.querySelectorAll('.feat-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width) * 100;
+        const y = ((e.clientY - r.top) / r.height) * 100;
+        card.style.setProperty('--mx', x + '%');
+        card.style.setProperty('--my', y + '%');
+      });
+    });
+
+    /* Scroll reveal — respects prefers-reduced-motion */
+    if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+      }, { threshold: .1, rootMargin: '0px 0px -24px 0px' });
+      document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+    } else {
+      document.querySelectorAll('.rv').forEach(el => el.classList.add('in'));
+    }
+  </script>
 </body>
+
 </html>
