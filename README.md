@@ -46,13 +46,46 @@ npx cybersec-career-coach
 ```
 
 #### CLI Options:
-*   **Select LLM Provider**: Override auto-detection and specify which AI model to run the diagnostic on:
+*   **Select LLM Provider**: Override auto-detection and specify which AI provider/model to run the diagnostic on:
     ```bash
-    # Force Google Gemini API
+    # Force Google Gemini API (Free tier available)
     npx cybersec-career-coach --gemini
     
     # Force Anthropic Claude API
     npx cybersec-career-coach --anthropic
+    
+    # Force OpenAI GPT API
+    npx cybersec-career-coach --openai
+
+    # Force Groq API (High-speed free developer tier)
+    npx cybersec-career-coach --groq
+
+    # Force OpenRouter API (Supports free LLM models)
+    npx cybersec-career-coach --openrouter
+
+    # Force DeepSeek API (China / High-efficiency)
+    npx cybersec-career-coach --deepseek
+
+    # Force Mistral AI API (Europe)
+    npx cybersec-career-coach --mistral
+
+    # Force Cohere API (Europe)
+    npx cybersec-career-coach --cohere
+
+    # Force Krutrim AI API (India)
+    npx cybersec-career-coach --krutrim
+
+    # Force Sarvam AI API (India)
+    npx cybersec-career-coach --sarvam
+
+    # Force Zhipu GLM API (China)
+    npx cybersec-career-coach --zhipu
+
+    # Force Alibaba Qwen API (China)
+    npx cybersec-career-coach --qwen
+
+    # Force Local Ollama endpoint (100% local and free)
+    npx cybersec-career-coach --ollama
     ```
 *   **Direct File Output**: Directly write the generated report to a Markdown file without interactive confirmation prompts:
     ```bash

@@ -1,6 +1,6 @@
 {
   "name": "cybersec-career-coach",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Brutally honest, god-tier cybersecurity career advisor system prompt & agentic skill.",
   "main": "bin/cli.js",
   "type": "module",

@@ -169,8 +169,8 @@ async function runIntakeFlow() {
   return answers;
 }
 
-// Call LLM API (Gemini or Anthropic)
-async function callLLM(systemPrompt, userMessage, provider, apiKey) {
+// Call LLM API (Gemini, Anthropic, OpenAI, Groq, OpenRouter, Ollama)
+async function callLLM(systemPrompt, userMessage, provider, apiKey, options = {}) {
   const modelName = provider === 'gemini' ? 'gemini-1.5-pro' : 'claude-3-5-sonnet-20241022';
   
   if (provider === 'gemini') {
@@ -193,7 +193,9 @@ async function callLLM(systemPrompt, userMessage, provider, apiKey) {
 
     const data = await response.json();
     return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
-  } else {
+  }
+
+  if (provider === 'anthropic') {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -217,7 +219,78 @@ async function callLLM(systemPrompt, userMessage, provider, apiKey) {
     const data = await response.json();
     return data.content?.[0]?.text || 'No response generated.';
   }
+
+  // OpenAI-compatible endpoints
+  let url = '';
+  let model = '';
+
+  if (provider === 'openai') {
+    url = 'https://api.openai.com/v1/chat/completions';
+    model = 'gpt-4o';
+  } else if (provider === 'groq') {
+    url = 'https://api.groq.com/openai/v1/chat/completions';
+    model = 'llama-3.1-70b-versatile';
+  } else if (provider === 'openrouter') {
+    url = 'https://openrouter.ai/api/v1/chat/completions';
+    model = 'meta-llama/llama-3-8b-instruct:free';
+  } else if (provider === 'deepseek') {
+    url = 'https://api.deepseek.com/v1/chat/completions';
+    model = 'deepseek-chat';
+  } else if (provider === 'mistral') {
+    url = 'https://api.mistral.ai/v1/chat/completions';
+    model = 'mistral-large-latest';
+  } else if (provider === 'cohere') {
+    url = 'https://api.cohere.com/v1/chat/completions';
+    model = 'command-r-plus';
+  } else if (provider === 'krutrim') {
+    url = 'https://cloud.olakrutrim.com/v1/chat/completions';
+    model = 'Krutrim-spectre-v2';
+  } else if (provider === 'sarvam') {
+    url = 'https://api.sarvam.ai/chat/completions';
+    model = 'sarvam-2b';
+  } else if (provider === 'zhipu') {
+    url = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+    model = 'glm-4';
+  } else if (provider === 'qwen') {
+    url = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+    model = 'qwen-plus';
+  } else if (provider === 'ollama') {
+    url = 'http://localhost:11434/v1/chat/completions';
+    model = options.ollamaModel || 'llama3';
+  }
+
+  if (url) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (provider !== 'ollama') {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+      headers['api-key'] = apiKey; // Support Sarvam AI header
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ],
+        temperature: 0.2
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`${provider.toUpperCase()} API Error: ${response.status} - ${errText}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || 'No response generated.';
+  }
+
+  throw new Error(`Unsupported API provider: ${provider}`);
 }
+
 
 // Track details extraction
 function getTrackDetails(targetRole) {
@@ -984,8 +1057,19 @@ async function main() {
     install --global / -g               - Install the skill globally in ~/.gemini/config/skills
 
   ${pc.yellow('Options:')}
-    -g, --gemini                        - Force Google Gemini API provider
-    -a, --anthropic                     - Force Anthropic Claude API provider
+    -g, --gemini                        - Force Google Gemini API provider (USA)
+    -a, --anthropic                     - Force Anthropic Claude API provider (USA)
+    --openai                            - Force OpenAI GPT API provider (USA)
+    --groq                              - Force Groq API provider (USA)
+    --openrouter                        - Force OpenRouter API provider (USA)
+    --deepseek                          - Force DeepSeek API provider (China)
+    --mistral                           - Force Mistral AI API provider (Europe)
+    --cohere                            - Force Cohere API provider (Europe)
+    --krutrim                           - Force Krutrim AI API provider (India)
+    --sarvam                            - Force Sarvam AI API provider (India)
+    --zhipu                             - Force Zhipu GLM API provider (China)
+    --qwen                              - Force Alibaba Qwen API provider (China)
+    --ollama                            - Force Local Ollama provider (completely free/local)
     -o, --output <filename>             - Direct report saving path (bypasses save prompt)
     -h, --help                          - Show this help message
     `);
@@ -1002,6 +1086,28 @@ async function main() {
         cliProvider = 'gemini';
       } else if (arg === '--anthropic' || arg === '-a') {
         cliProvider = 'anthropic';
+      } else if (arg === '--openai') {
+        cliProvider = 'openai';
+      } else if (arg === '--groq') {
+        cliProvider = 'groq';
+      } else if (arg === '--openrouter') {
+        cliProvider = 'openrouter';
+      } else if (arg === '--deepseek') {
+        cliProvider = 'deepseek';
+      } else if (arg === '--mistral') {
+        cliProvider = 'mistral';
+      } else if (arg === '--cohere') {
+        cliProvider = 'cohere';
+      } else if (arg === '--krutrim') {
+        cliProvider = 'krutrim';
+      } else if (arg === '--sarvam') {
+        cliProvider = 'sarvam';
+      } else if (arg === '--zhipu') {
+        cliProvider = 'zhipu';
+      } else if (arg === '--qwen') {
+        cliProvider = 'qwen';
+      } else if (arg === '--ollama') {
+        cliProvider = 'ollama';
       } else if (arg.startsWith('--output=')) {
         outputFile = arg.split('=')[1];
       } else if (arg === '-o') {
@@ -1012,6 +1118,7 @@ async function main() {
       }
     }
   }
+
 
 
   if (command === 'copy') {
@@ -1157,7 +1264,19 @@ Q5 — Biggest Obstacle:
 
     if (cliProvider) {
       apiProvider = cliProvider;
-      apiKey = cliProvider === 'gemini' ? process.env.GEMINI_API_KEY : process.env.ANTHROPIC_API_KEY;
+      if (cliProvider === 'gemini') apiKey = process.env.GEMINI_API_KEY;
+      else if (cliProvider === 'anthropic') apiKey = process.env.ANTHROPIC_API_KEY;
+      else if (cliProvider === 'openai') apiKey = process.env.OPENAI_API_KEY;
+      else if (cliProvider === 'groq') apiKey = process.env.GROQ_API_KEY;
+      else if (cliProvider === 'openrouter') apiKey = process.env.OPENROUTER_API_KEY;
+      else if (cliProvider === 'deepseek') apiKey = process.env.DEEPSEEK_API_KEY;
+      else if (cliProvider === 'mistral') apiKey = process.env.MISTRAL_API_KEY;
+      else if (cliProvider === 'cohere') apiKey = process.env.COHERE_API_KEY;
+      else if (cliProvider === 'krutrim') apiKey = process.env.KRUTRIM_API_KEY;
+      else if (cliProvider === 'sarvam') apiKey = process.env.SARVAM_API_KEY;
+      else if (cliProvider === 'zhipu') apiKey = process.env.ZHIPU_API_KEY;
+      else if (cliProvider === 'qwen') apiKey = process.env.DASHSCOPE_API_KEY;
+      else if (cliProvider === 'ollama') apiKey = 'ollama-local';
     } else {
       if (process.env.GEMINI_API_KEY) {
         apiProvider = 'gemini';
@@ -1165,10 +1284,40 @@ Q5 — Biggest Obstacle:
       } else if (process.env.ANTHROPIC_API_KEY) {
         apiProvider = 'anthropic';
         apiKey = process.env.ANTHROPIC_API_KEY;
+      } else if (process.env.OPENAI_API_KEY) {
+        apiProvider = 'openai';
+        apiKey = process.env.OPENAI_API_KEY;
+      } else if (process.env.GROQ_API_KEY) {
+        apiProvider = 'groq';
+        apiKey = process.env.GROQ_API_KEY;
+      } else if (process.env.OPENROUTER_API_KEY) {
+        apiProvider = 'openrouter';
+        apiKey = process.env.OPENROUTER_API_KEY;
+      } else if (process.env.DEEPSEEK_API_KEY) {
+        apiProvider = 'deepseek';
+        apiKey = process.env.DEEPSEEK_API_KEY;
+      } else if (process.env.MISTRAL_API_KEY) {
+        apiProvider = 'mistral';
+        apiKey = process.env.MISTRAL_API_KEY;
+      } else if (process.env.COHERE_API_KEY) {
+        apiProvider = 'cohere';
+        apiKey = process.env.COHERE_API_KEY;
+      } else if (process.env.KRUTRIM_API_KEY) {
+        apiProvider = 'krutrim';
+        apiKey = process.env.KRUTRIM_API_KEY;
+      } else if (process.env.SARVAM_API_KEY) {
+        apiProvider = 'sarvam';
+        apiKey = process.env.SARVAM_API_KEY;
+      } else if (process.env.ZHIPU_API_KEY) {
+        apiProvider = 'zhipu';
+        apiKey = process.env.ZHIPU_API_KEY;
+      } else if (process.env.DASHSCOPE_API_KEY) {
+        apiProvider = 'qwen';
+        apiKey = process.env.DASHSCOPE_API_KEY;
       }
     }
 
-    if (!apiKey) {
+    if (!apiKey && apiProvider !== 'ollama') {
       let selectedProvider = cliProvider;
       if (!selectedProvider) {
         const apiChoice = await prompts({
@@ -1176,8 +1325,19 @@ Q5 — Biggest Obstacle:
           name: 'choice',
           message: 'No LLM API keys found in environment. How would you like to proceed?',
           choices: [
-            { title: 'Enter a Google Gemini API Key', value: 'gemini' },
-            { title: 'Enter an Anthropic Claude API Key', value: 'anthropic' },
+            { title: 'Google Gemini (USA / Free tier available)', value: 'gemini' },
+            { title: 'Anthropic Claude (USA)', value: 'anthropic' },
+            { title: 'OpenAI GPT (USA)', value: 'openai' },
+            { title: 'Groq (USA / Free tier available)', value: 'groq' },
+            { title: 'OpenRouter (USA / Free models available)', value: 'openrouter' },
+            { title: 'DeepSeek (China / High-efficiency)', value: 'deepseek' },
+            { title: 'Mistral AI (Europe)', value: 'mistral' },
+            { title: 'Cohere (Europe)', value: 'cohere' },
+            { title: 'Krutrim AI (India)', value: 'krutrim' },
+            { title: 'Sarvam AI (India)', value: 'sarvam' },
+            { title: 'Zhipu GLM (China)', value: 'zhipu' },
+            { title: 'Alibaba Qwen (China)', value: 'qwen' },
+            { title: 'Ollama (Local / Completely Free)', value: 'ollama' },
             { title: 'No key — Just display the compiled prompt (to paste manually)', value: 'none' }
           ]
         });
@@ -1192,11 +1352,28 @@ Q5 — Biggest Obstacle:
         return;
       }
 
-      if (selectedProvider === 'gemini' || selectedProvider === 'anthropic') {
+      if (selectedProvider === 'ollama') {
+        apiProvider = 'ollama';
+        apiKey = 'ollama-local';
+      } else if (selectedProvider) {
+        const keyNames = {
+          gemini: 'Gemini',
+          anthropic: 'Anthropic',
+          openai: 'OpenAI',
+          groq: 'Groq',
+          openrouter: 'OpenRouter',
+          deepseek: 'DeepSeek',
+          mistral: 'Mistral',
+          cohere: 'Cohere',
+          krutrim: 'Krutrim',
+          sarvam: 'Sarvam',
+          zhipu: 'Zhipu/GLM',
+          qwen: 'DashScope/Qwen'
+        };
         const keyInput = await prompts({
           type: 'password',
           name: 'key',
-          message: `Please paste your ${selectedProvider === 'gemini' ? 'Gemini' : 'Anthropic'} API Key:`
+          message: `Please paste your ${keyNames[selectedProvider]} API Key:`
         });
         apiKey = keyInput.key;
         apiProvider = selectedProvider;
@@ -1208,7 +1385,34 @@ Q5 — Biggest Obstacle:
       return;
     }
 
-    console.log(pc.yellow(`\nChannelling the Coach via ${apiProvider === 'gemini' ? 'Gemini' : 'Anthropic'}...`));
+    let ollamaModel = 'llama3';
+    if (apiProvider === 'ollama') {
+      const modelPrompt = await prompts({
+        type: 'text',
+        name: 'model',
+        message: 'Enter the name of your local Ollama model (e.g. llama3, llama3.1, mistral, codellama):',
+        initial: 'llama3'
+      });
+      ollamaModel = modelPrompt.model || 'llama3';
+    }
+
+    const providerNames = {
+      gemini: 'Gemini',
+      anthropic: 'Claude',
+      openai: 'OpenAI GPT',
+      groq: 'Groq (Llama-3.1)',
+      openrouter: 'OpenRouter (Llama-3)',
+      deepseek: 'DeepSeek',
+      mistral: 'Mistral',
+      cohere: 'Cohere',
+      krutrim: 'Krutrim',
+      sarvam: 'Sarvam',
+      zhipu: 'Zhipu GLM',
+      qwen: 'Alibaba Qwen',
+      ollama: `Ollama (${ollamaModel})`
+    };
+
+    console.log(pc.yellow(`\nChannelling the Coach via ${providerNames[apiProvider]}...`));
 
     try {
       const systemPromptPath = path.join(rootDir, 'cybersec-career-coach.md');
@@ -1221,7 +1425,7 @@ Q5 — Biggest Obstacle:
         dots++;
       }, 300);
 
-      const diagnosticResponse = await callLLM(systemPrompt, formattedUserMsg, apiProvider, apiKey);
+      const diagnosticResponse = await callLLM(systemPrompt, formattedUserMsg, apiProvider, apiKey, { ollamaModel });
 
       clearInterval(interval);
       process.stdout.write('\r' + ' '.repeat(40) + '\r'); // Clear loading line
@@ -1282,8 +1486,19 @@ ${diagnosticResponse}
     install --global / -g               - Install the skill globally in ~/.gemini/config/skills
 
   ${pc.yellow('Options:')}
-    -g, --gemini                        - Force Google Gemini API provider
-    -a, --anthropic                     - Force Anthropic Claude API provider
+    -g, --gemini                        - Force Google Gemini API provider (USA)
+    -a, --anthropic                     - Force Anthropic Claude API provider (USA)
+    --openai                            - Force OpenAI GPT API provider (USA)
+    --groq                              - Force Groq API provider (USA)
+    --openrouter                        - Force OpenRouter API provider (USA)
+    --deepseek                          - Force DeepSeek API provider (China)
+    --mistral                           - Force Mistral AI API provider (Europe)
+    --cohere                            - Force Cohere API provider (Europe)
+    --krutrim                           - Force Krutrim AI API provider (India)
+    --sarvam                            - Force Sarvam AI API provider (India)
+    --zhipu                             - Force Zhipu GLM API provider (China)
+    --qwen                              - Force Alibaba Qwen API provider (China)
+    --ollama                            - Force Local Ollama provider (completely free/local)
     -o, --output <filename>             - Direct report saving path (bypasses save prompt)
     -h, --help                          - Show this help message
   `);
