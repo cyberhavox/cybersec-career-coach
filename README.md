@@ -213,6 +213,7 @@ Gatebreaker channels specific mentors based on your diagnosis:
 
 | Version | Key Changes |
 | :--- | :--- |
+| **1.1.0** | Redesigned landing page with premium styles, version history table, FAQ schema, and copy-command toast. |
 | **1.0.9** | Rebranded repository to **Gatebreaker** and added side-by-side **Expert Simulator & Comparison Dashboard**. |
 | **1.0.8** | Added OIDC Trusted Publishing and modernized CI/CD workflow. Cleaned up redundant dependencies. |
 | **1.0.7** | Added support for 12 global LLM API providers (Gemini, Anthropic, OpenAI, Groq, OpenRouter, DeepSeek, Mistral, Cohere, Krutrim, Sarvam, Zhipu, Qwen). |
